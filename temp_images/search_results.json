@@ -1,0 +1,121 @@
+{
+  "leather_gloves": [
+    {
+      "id": "2icN5otUUOU",
+      "desc": "brown wooden chair with brown leather pad",
+      "url": "https://images.unsplash.com/photo-1600109978256-6f387208a070"
+    },
+    {
+      "id": "owAuTEa4QXA",
+      "desc": "unknown person sitting outdoors",
+      "url": "https://images.unsplash.com/photo-1564061061-b7b2cb01b163"
+    },
+    {
+      "id": "2-on-IxnijM",
+      "desc": "yellow and green maple leaf",
+      "url": "https://images.unsplash.com/photo-1571120246119-cbab87706a29"
+    }
+  ],
+  "chandelier": [
+    {
+      "id": "uM6WVRjpRew",
+      "desc": "a chandelier hanging from a glass window",
+      "url": "https://images.unsplash.com/photo-1679108230530-325f77243adc"
+    },
+    {
+      "id": "gaRAszz5l8Y",
+      "desc": "a chandelier hanging from a ceiling in a room",
+      "url": "https://images.unsplash.com/photo-1645821522707-6f2b171d9065"
+    },
+    {
+      "id": "5Y4Jk6TZpnc",
+      "desc": "a chandelier hanging from a wire with a blue sky in the back",
+      "url": "https://images.unsplash.com/photo-1649095556646-ada53ce87eab"
+    }
+  ],
+  "table_lamp": [
+    {
+      "id": "SNtTuhyEqcI",
+      "desc": "Antique lamp with decorative statues and glass items",
+      "url": "https://images.unsplash.com/photo-1763336321584-d525110de16f"
+    },
+    {
+      "id": "tXQKzLpfnHs",
+      "desc": "A long table with a bunch of candles on it",
+      "url": "https://images.unsplash.com/photo-1718463384055-738905bdd16e"
+    },
+    {
+      "id": "mi866jDfqok",
+      "desc": "A table topped with lots of gold candles",
+      "url": "https://images.unsplash.com/photo-1718463383973-5db9edea7d34"
+    }
+  ],
+  "wireless_charger": [
+    {
+      "id": "1Y579--3k5M",
+      "desc": "a close up of a mouse on a table",
+      "url": "https://images.unsplash.com/photo-1633381638729-27f730955c23"
+    },
+    {
+      "id": "81vuPDvvLng",
+      "desc": "A cell phone sitting on top of a wooden table",
+      "url": "https://images.unsplash.com/photo-1737882171913-f4ced0ce73d8"
+    },
+    {
+      "id": "r0Do56ntkBs",
+      "desc": "black framed Ray-Ban aviator sunglasses",
+      "url": "https://images.unsplash.com/photo-1543472750-506bacbf5808"
+    }
+  ],
+  "gold_earrings": [
+    {
+      "id": "eRC6VIs-aD4",
+      "desc": "gold-colored face-cutout earrings",
+      "url": "https://images.unsplash.com/photo-1553926297-57bb350c4f08"
+    },
+    {
+      "id": "6f70pVbhU8U",
+      "desc": "Ornate gold filigree medallions on dark background",
+      "url": "https://images.unsplash.com/photo-1765233200117-1cb460a71fa9"
+    },
+    {
+      "id": "AU0-OIpU62s",
+      "desc": "Two gold oval earrings with intricate designs.",
+      "url": "https://images.unsplash.com/photo-1761479268064-c43b8240b237"
+    }
+  ],
+  "bath_bombs": [
+    {
+      "id": "hd2RM3_hw0c",
+      "desc": "a basket of balls",
+      "url": "https://images.unsplash.com/photo-1662381562245-5e743d59a649"
+    },
+    {
+      "id": "TLMVwZLuyKI",
+      "desc": "blue green and purple abstract painting",
+      "url": "https://images.unsplash.com/photo-1615427968565-c35f926bdf3a"
+    },
+    {
+      "id": "39ft3ITsPTw",
+      "desc": "assorted-color sky lantern lot",
+      "url": "https://images.unsplash.com/photo-1513257027570-b3f9c5f5442d"
+    }
+  ],
+  "cologne": [
+    {
+      "id": "IEmvTxmJvxY",
+      "desc": "Three bottles of ustraa cologne on a surface.",
+      "url": "https://images.unsplash.com/photo-1758871992965-836e1fb0f9bc"
+    },
+    {
+      "id": "AZG8nx5QB-4",
+      "desc": "Three perfume bottles on a light surface.",
+      "url": "https://images.unsplash.com/photo-1758871993077-e084cc7eca86"
+    },
+    {
+      "id": "nErXDQGI_CU",
+      "desc": "Dior sauvage perfume bottle with water droplets",
+      "url": "https://images.unsplash.com/photo-1767187861728-942f561b7103"
+    }
+  ]
+}

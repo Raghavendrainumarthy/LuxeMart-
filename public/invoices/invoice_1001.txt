@@ -1,0 +1,15 @@
+LUXEMART ORDER INVOICE
+======================
+Order ID: #1001
+Customer: John Doe
+Date: 2026-03-01
+
+Items:
+- Premium Leather Wallet x1   $149.99
+- Silk Tie x2                  $89.98
+
+Subtotal: $239.97
+Shipping: $9.99
+Total: $249.96
+
+Thank you for shopping at LuxeMart!

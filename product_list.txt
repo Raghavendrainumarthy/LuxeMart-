@@ -1,0 +1,105 @@
+1|Watches|Royal Oak Chronograph
+2|Watches|Nautilus Platinum
+3|Watches|Submariner Gold
+4|Watches|Daytona Cosmograph
+5|Watches|Santos de Cartier
+6|Bags|Birkin 35 Togo
+7|Bags|Classic Flap Medium
+8|Bags|Neverfull MM
+9|Bags|Kelly Sellier 28
+10|Bags|Speedy Bandoulière 30
+11|Jewelry|Love Bracelet Rose Gold
+12|Jewelry|Diamond Tennis Bracelet
+13|Jewelry|Pearl Strand Necklace
+14|Jewelry|Panthère de Cartier Ring
+15|Jewelry|Tiffany Victoria Earrings
+16|Shoes|Red Bottom Pumps
+17|Shoes|Triple S Sneakers
+18|Shoes|Chelsea Suede Boots
+19|Shoes|Oxford Brogues Premium
+20|Shoes|Velvet Loafers
+21|Shoes|Stiletto Sandals Crystal
+22|Shoes|Leather Derby Shoes
+23|Suits|Bespoke Wool Suit
+24|Suits|Tuxedo Midnight Blue
+25|Suits|Linen Summer Suit
+26|Suits|Double-Breasted Pinstripe
+27|Suits|Velvet Dinner Jacket
+28|Dresses|Silk Evening Gown
+29|Dresses|Sequin Cocktail Dress
+30|Dresses|Cashmere Wrap Dress
+31|Dresses|Embroidered Ball Gown
+32|Dresses|Lace Midi Dress
+33|Dresses|Velvet Maxi Dress
+34|Perfumes|Oud Royal Parfum
+35|Perfumes|Noir Absolu
+36|Perfumes|Fleur de Luxe
+37|Perfumes|Bois Précieux
+38|Perfumes|Aqua di Mare
+39|Perfumes|Rose Imperiale
+40|Sunglasses|Aviator Sunglasses
+41|Sunglasses|Cat-Eye Acetate
+42|Sunglasses|Oversized Square
+43|Sunglasses|Titanium Wayfarers
+44|Sunglasses|Round Wire Frames
+45|Clothing|Cashmere Overcoat
+46|Clothing|Leather Biker Jacket
+47|Clothing|Silk Blouse Ivory
+48|Clothing|Merino Wool Sweater
+49|Accessories|Silk Scarf Carré
+50|Accessories|Leather Card Holder
+51|Accessories|Leather Belt Reversible
+52|Accessories|Cashmere Scarf
+53|Accessories|Leather Gloves Silk-Lined
+54|Men|Italian Dress Shirt
+55|Men|Polo Ralph Lauren Classic
+56|Men|Designer Slim Jeans
+57|Men|Leather Bomber Jacket
+58|Men|Cashmere V-Neck Sweater
+59|Men|Formal Trousers Wool
+60|Men|Luxury Sneakers White
+61|Men|Monk Strap Shoes
+62|Men|High-Top Designer Sneakers
+63|Men|Bleu de Cologne
+64|Men|Sauvage Intense
+65|Men|Aventus Creed
+66|Men|Tobacco Vanille
+67|Men|Clubmaster Classic
+68|Men|Sport Wraparound
+69|Men|Pilot Navigator
+70|Electronics|Wireless ANC Headphones
+71|Electronics|Smart Watch Ultra
+72|Electronics|Wireless Earbuds Pro
+73|Electronics|Portable Speaker Premium
+74|Electronics|Mechanical Keyboard RGB
+75|Electronics|Wireless Charging Pad
+76|Electronics|Action Camera 4K
+77|Electronics|E-Reader Premium
+78|Home|Crystal Chandelier
+79|Home|Velvet Sofa Set
+80|Home|Marble Coffee Table
+81|Home|Silk Throw Pillows Set
+82|Home|Persian Rug Vintage
+83|Home|Table Lamp Crystal
+84|Home|Wall Art Canvas Set
+85|Fitness|Smart Fitness Tracker
+86|Fitness|Yoga Mat Premium
+87|Fitness|Adjustable Dumbbells Set
+88|Fitness|Running Shoes Elite
+89|Fitness|Resistance Bands Pro Set
+90|Women|Designer Handbag Crossbody
+91|Women|Cashmere Cardigan
+92|Women|Silk Camisole Top
+93|Women|Wide Leg Trousers
+94|Women|Block Heel Sandals
+95|Women|Statement Earrings Gold
+96|Women|Trench Coat Classic
+97|Women|Ballet Flats Leather
+98|Kids|Kids Cashmere Sweater
+99|Kids|Kids Designer Sneakers
+100|Kids|Kids Party Dress
+101|Kids|Kids Smart Watch
+102|Beauty|Luxury Skincare Set
+103|Beauty|Makeup Palette Deluxe
+104|Beauty|Hair Styling Tools Set
+105|Beauty|Luxury Bath Set

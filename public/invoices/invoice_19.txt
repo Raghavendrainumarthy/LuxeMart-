@@ -1,0 +1,43 @@
+════════════════════════════════════════════════════════════
+         LUXEMART — OFFICIAL INVOICE
+         Premium E-Commerce · luxemart.com
+════════════════════════════════════════════════════════════
+
+  Invoice No    : LUX-INV-000019
+  Order ID      : #19
+  Date          : February 25, 2026
+  Status        : Paid
+  Tracking No   : LUX-2024-001262
+
+────────────────────────────────────────────────────────────
+  BILL TO
+────────────────────────────────────────────────────────────
+  Name          : J Jonnah Jonhnsson
+  Email         : jonah@dailybugle.com
+  Phone         : +1-555-0103
+  Address       : 321 Demo Lane, San Francisco, CA 94102
+
+────────────────────────────────────────────────────────────
+  ITEMS ORDERED
+────────────────────────────────────────────────────────────
+  Description                    Qty   Unit Price Total   
+  ─────────────────────────────  ────  ─────────  ─────── 
+  Love Bracelet Rose Gold        1     $7450.00   $7450.00
+
+────────────────────────────────────────────────────────────
+                                        Subtotal : $7450.00
+                             Shipping & Handling : $9.99
+                                        Tax (8%) : $596.00
+────────────────────────────────────────────────────────────
+                                      TOTAL PAID : $8055.99
+────────────────────────────────────────────────────────────
+
+  PAYMENT DETAILS
+  Method        : CREDIT_CARD
+  Card          : **** **** **** 3333
+
+════════════════════════════════════════════════════════════
+  Thank you for shopping at LuxeMart!
+  For support: support@luxemart.com  |  +1 (800) LUX-MART
+  This is a computer-generated invoice. No signature required.
+════════════════════════════════════════════════════════════

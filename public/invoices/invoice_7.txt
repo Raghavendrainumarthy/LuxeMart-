@@ -1,0 +1,43 @@
+════════════════════════════════════════════════════════════
+         LUXEMART — OFFICIAL INVOICE
+         Premium E-Commerce · luxemart.com
+════════════════════════════════════════════════════════════
+
+  Invoice No    : LUX-INV-000007
+  Order ID      : #7
+  Date          : February 25, 2026
+  Status        : Paid
+  Tracking No   : LUX-2024-001240
+
+────────────────────────────────────────────────────────────
+  BILL TO
+────────────────────────────────────────────────────────────
+  Name          : Peter Parker
+  Email         : peter@dailybugle.com
+  Phone         : +1-555-0101
+  Address       : 456 Oak Avenue, Los Angeles, CA 90001
+
+────────────────────────────────────────────────────────────
+  ITEMS ORDERED
+────────────────────────────────────────────────────────────
+  Description                    Qty   Unit Price Total   
+  ─────────────────────────────  ────  ─────────  ─────── 
+  Submariner Gold                1     $38999.99  $38999.9
+
+────────────────────────────────────────────────────────────
+                                        Subtotal : $38999.99
+                             Shipping & Handling : $9.99
+                                        Tax (8%) : $3120.00
+────────────────────────────────────────────────────────────
+                                      TOTAL PAID : $42129.98
+────────────────────────────────────────────────────────────
+
+  PAYMENT DETAILS
+  Method        : CREDIT_CARD
+  Card          : **** **** **** 1098
+
+════════════════════════════════════════════════════════════
+  Thank you for shopping at LuxeMart!
+  For support: support@luxemart.com  |  +1 (800) LUX-MART
+  This is a computer-generated invoice. No signature required.
+════════════════════════════════════════════════════════════

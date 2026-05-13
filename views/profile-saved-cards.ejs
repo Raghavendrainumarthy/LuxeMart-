@@ -1,0 +1,146 @@
+<%- include('layouts/main', { title: title }) %>
+
+    <div style="padding-top: 120px; padding-bottom: var(--spacing-4xl); min-height: 100vh;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 300px 1fr; gap: var(--spacing-2xl);">
+                <!-- Sidebar -->
+                <%- include('partials/profile-sidebar', { activePage: activePage }) %>
+
+                    <!-- Main Content -->
+                    <div>
+                        <div class="card" style="margin-bottom: var(--spacing-xl);">
+                            <div class="card-body">
+                                <h2 style="margin-bottom: var(--spacing-lg);">Saved Cards</h2>
+
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--spacing-lg);">
+                                    <% if (creditCards && creditCards.length> 0) { %>
+                                        <% creditCards.forEach(function(card, index) { var cardGradient, cardBgPattern;
+                                            if (card.card_type==='Visa' ) {
+                                            cardGradient='linear-gradient(135deg, #1a1f71 0%, #00579f 100%)' ;
+                                            cardBgPattern='radial-gradient(ellipse at top right, rgba(255,255,255,0.15) 0%, transparent 50%)'
+                                            ; } else if (card.card_type==='Mastercard' ) {
+                                            cardGradient='linear-gradient(135deg, #252525 0%, #1a1a1a 100%)' ;
+                                            cardBgPattern='radial-gradient(ellipse at bottom left, rgba(255,255,255,0.08) 0%, transparent 50%)'
+                                            ; } else { cardGradient='linear-gradient(135deg, #006fcf 0%, #003087 100%)'
+                                            ;
+                                            cardBgPattern='radial-gradient(ellipse at top right, rgba(255,255,255,0.12) 0%, transparent 50%)'
+                                            ; } %>
+                                            <div class="credit-card"
+                                                style="background: <%= cardGradient %>; padding: 28px; border-radius: 14px; color: white; position: relative; min-height: 210px; box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.2); overflow: hidden; font-family: 'Arial', sans-serif; aspect-ratio: 1.586;">
+                                                <!-- Background pattern -->
+                                                <div
+                                                    style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: <%= cardBgPattern %>; pointer-events: none;">
+                                                </div>
+
+                                                <!-- Primary badge -->
+                                                <% if (card.is_default) { %>
+                                                    <div
+                                                        style="position: absolute; top: 12px; left: 12px; background: rgba(255,215,0,0.9); color: #1a1a1a; font-size: 0.6rem; padding: 3px 8px; border-radius: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                        Primary</div>
+                                                    <% } %>
+
+                                                        <!-- Card Network Logo -->
+                                                        <div style="position: absolute; top: 20px; right: 24px;">
+                                                            <% if (card.card_type==='Visa' ) { %>
+                                                                <svg width="70" height="24" viewBox="0 0 1000 324"
+                                                                    fill="white">
+                                                                    <path
+                                                                        d="M651.19 0.5L595.37 323.5H512.16L568 0.5H651.19ZM905.13 211.95L950.33 95.16L976.56 211.95H905.13ZM1000 323.5H924.64L914.75 283.5H810.75L797.13 323.5H714.54L829.36 17.5C834.67 3.85 847.56 0.5 862.46 0.5H934.46L1000 323.5ZM820.33 218.28C820.33 218.28 761.24 71.48 743.39 24.04C730.67 54.02 681.14 173.5 652.93 242.5H736.27C745.62 221.12 789.18 106.5 789.18 106.5L820.33 218.28ZM453.13 0.5L295.54 323.5H209.08L128.52 64.5C141.41 73.02 177.69 94.5 193.64 107C237.48 167.5 256.62 242.5 274.37 323.5H357.58L472.44 0.5H453.13ZM383.3 0.5L273.5 223.5L259.04 155.2C230.79 84.02 162.33 52.5 71.37 17.5L71.5 0.5H208.96C223.96 0.5 236.33 10.5 239.96 27.5L276.87 219.5L359.46 0.5H383.3Z" />
+                                                                </svg>
+                                                                <% } else if (card.card_type==='Mastercard' ) { %>
+                                                                    <div style="display: flex; align-items: center;">
+                                                                        <div
+                                                                            style="width: 36px; height: 36px; background: #eb001b; border-radius: 50%;">
+                                                                        </div>
+                                                                        <div
+                                                                            style="width: 36px; height: 36px; background: #f79e1b; border-radius: 50%; margin-left: -14px; opacity: 0.9;">
+                                                                        </div>
+                                                                    </div>
+                                                                    <% } else { %>
+                                                                        <div
+                                                                            style="font-size: 1.6rem; font-weight: 700; font-style: italic; letter-spacing: -1px;">
+                                                                            AMEX</div>
+                                                                        <% } %>
+                                                        </div>
+
+                                                        <!-- EMV Chip -->
+                                                        <div style="margin-top: 25px; margin-bottom: 25px;">
+                                                            <div
+                                                                style="width: 55px; height: 42px; background: linear-gradient(145deg, #d4af37, #f4d03f, #c9a227); border-radius: 8px; position: relative; box-shadow: inset 0 1px 3px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.3);">
+                                                                <div
+                                                                    style="position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px solid rgba(0,0,0,0.15); border-radius: 4px;">
+                                                                </div>
+                                                                <div
+                                                                    style="position: absolute; top: 50%; left: 4px; right: 4px; height: 1px; background: rgba(0,0,0,0.1);">
+                                                                </div>
+                                                                <div
+                                                                    style="position: absolute; left: 50%; top: 4px; bottom: 4px; width: 1px; background: rgba(0,0,0,0.1);">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Card Number -->
+                                                        <div
+                                                            style="font-size: 1.5rem; letter-spacing: 3px; font-family: 'OCR A Extended', 'Courier New', monospace; margin-bottom: 25px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                                            •••• •••• •••• <%= card.card_number.slice(-4) %>
+                                                        </div>
+
+                                                        <!-- Bottom row: Holder and Expiry -->
+                                                        <div
+                                                            style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                                            <!-- Card Holder -->
+                                                            <div>
+                                                                <div
+                                                                    style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 4px;">
+                                                                    Card Holder</div>
+                                                                <div
+                                                                    style="font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 2px;">
+                                                                    <%= user.full_name || user.username %>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Valid Thru -->
+                                                            <div style="text-align: right;">
+                                                                <div
+                                                                    style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 4px;">
+                                                                    Valid Thru</div>
+                                                                <div
+                                                                    style="font-size: 0.9rem; font-weight: 500; letter-spacing: 1px;">
+                                                                    <%= card.expiry_date %>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Contactless Payment Icon -->
+                                                        <div
+                                                            style="position: absolute; bottom: 28px; right: 24px; opacity: 0.7;">
+                                                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+                                                                stroke="white" stroke-width="2">
+                                                                <path d="M6.5 13.5c1.5-1.5 3.5-2.5 5.5-2.5" />
+                                                                <path d="M4 16c2.5-2.5 5.5-4 9-4" />
+                                                                <path d="M2 19c3.5-3.5 8-6 13-6" />
+                                                            </svg>
+                                                        </div>
+                                            </div>
+                                            <% }); %>
+                                                <% } else { %>
+                                                    <div
+                                                        style="grid-column: 1/-1; text-align: center; padding: var(--spacing-2xl); background: var(--color-gray); border-radius: var(--radius-lg); border: 1px solid var(--glass-border);">
+                                                        <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">
+                                                            💳</div>
+                                                        <h4 style="margin-bottom: var(--spacing-sm);">No Saved Cards
+                                                        </h4>
+                                                        <p
+                                                            style="color: var(--color-light-gray); margin-bottom: var(--spacing-lg);">
+                                                            Add a card during checkout for faster payments.</p>
+                                                    </div>
+                                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

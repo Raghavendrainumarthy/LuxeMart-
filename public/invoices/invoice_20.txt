@@ -1,0 +1,43 @@
+════════════════════════════════════════════════════════════
+         LUXEMART — OFFICIAL INVOICE
+         Premium E-Commerce · luxemart.com
+════════════════════════════════════════════════════════════
+
+  Invoice No    : LUX-INV-000020
+  Order ID      : #20
+  Date          : February 25, 2026
+  Status        : Paid
+  Tracking No   : LUX-2024-001263
+
+────────────────────────────────────────────────────────────
+  BILL TO
+────────────────────────────────────────────────────────────
+  Name          : J Jonnah Jonhnsson
+  Email         : jonah@dailybugle.com
+  Phone         : +1-555-0103
+  Address       : 321 Demo Lane, San Francisco, CA 94102
+
+────────────────────────────────────────────────────────────
+  ITEMS ORDERED
+────────────────────────────────────────────────────────────
+  Description                    Qty   Unit Price Total   
+  ─────────────────────────────  ────  ─────────  ─────── 
+  Red Bottom Pumps               1     $795.00    $795.00 
+
+────────────────────────────────────────────────────────────
+                                        Subtotal : $795.00
+                             Shipping & Handling : $9.99
+                                        Tax (8%) : $63.60
+────────────────────────────────────────────────────────────
+                                      TOTAL PAID : $868.59
+────────────────────────────────────────────────────────────
+
+  PAYMENT DETAILS
+  Method        : CREDIT_CARD
+  Card          : **** **** **** 3333
+
+════════════════════════════════════════════════════════════
+  Thank you for shopping at LuxeMart!
+  For support: support@luxemart.com  |  +1 (800) LUX-MART
+  This is a computer-generated invoice. No signature required.
+════════════════════════════════════════════════════════════

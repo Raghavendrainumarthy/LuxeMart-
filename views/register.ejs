@@ -1,0 +1,53 @@
+<%- include('layouts/main', { title: title }) %>
+
+    <div style="padding-top: 120px; min-height: 100vh; display: flex; align-items: center;">
+        <div class="container" style="max-width: 500px;">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>Create <span class="text-gold">Account</span></h1>
+                    <p class="text-muted">Join LuxeMart for exclusive access</p>
+                </div>
+
+                <% if (error) { %>
+                    <div class="alert alert-error">
+                        <%= error %>
+                    </div>
+                    <% } %>
+
+                        <form action="/register" method="POST" class="auth-form">
+                            <div class="form-group">
+                                <label class="form-label">Username</label>
+                                <input type="text" name="username" class="form-input" placeholder="Choose a username"
+                                    required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email" class="form-input" placeholder="your@email.com"
+                                    required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" name="full_name" class="form-input" placeholder="Your full name">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input type="password" name="password" class="form-input"
+                                    placeholder="Create a password" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Create
+                                Account</button>
+                        </form>
+
+                        <div class="auth-footer">
+                            <p>Already have an account? <a href="/login" style="color: var(--color-gold);">Sign In</a>
+                            </p>
+                        </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

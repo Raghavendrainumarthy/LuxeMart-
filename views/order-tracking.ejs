@@ -1,0 +1,80 @@
+<%- include('layouts/main', { title: title }) %>
+
+    <div style="padding-top: 120px; min-height: 100vh;">
+        <div class="container" style="max-width: 800px;">
+            <div class="card">
+                <div class="card-header" style="text-align: center;">
+                    <h2>Track Your Order</h2>
+                    <p class="text-muted">
+                        <%= order.tracking_number %>
+                    </p>
+                </div>
+
+                <div class="card-body">
+                    <!-- Order Status Timeline -->
+                    <div style="margin-bottom: var(--spacing-2xl);">
+                        <div style="display: flex; justify-content: space-between; position: relative;">
+                            <div
+                                style="position: absolute; top: 20px; left: 10%; right: 10%; height: 3px; background: var(--color-gray); z-index: 0;">
+                            </div>
+
+                            <% var statuses=['pending', 'processing' , 'shipped' , 'delivered' ]; %>
+                                <% statuses.forEach(function(status, index) { %>
+                                    <div style="text-align: center; z-index: 1; flex: 1;">
+                                        <div
+                                            style="width: 40px; height: 40px; margin: 0 auto; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: <%= statuses.indexOf(order.status) >= index ? 'var(--color-gold)' : 'var(--color-gray)' %>; color: <%= statuses.indexOf(order.status) >= index ? 'var(--color-black)' : 'var(--color-light-gray)' %>;">
+                                            <%= index===0 ? '📋' : index===1 ? '📦' : index===2 ? '🚚' : '✅' %>
+                                        </div>
+                                        <p
+                                            style="margin-top: var(--spacing-sm); font-size: 0.85rem; text-transform: capitalize; color: <%= statuses.indexOf(order.status) >= index ? 'var(--color-white)' : 'var(--color-light-gray)' %>;">
+                                            <%= status %>
+                                        </p>
+                                    </div>
+                                    <% }); %>
+                        </div>
+                    </div>
+
+                    <!-- Order Info -->
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-xl); margin-bottom: var(--spacing-xl);">
+                        <div>
+                            <h4 style="margin-bottom: var(--spacing-md);">Order Details</h4>
+                            <p class="text-muted">Order ID: #<%= order.id %>
+                            </p>
+                            <p class="text-muted">Date: <%= new Date(order.created_at).toLocaleDateString() %>
+                            </p>
+                            <p style="color: var(--color-gold); font-weight: 600; margin-top: var(--spacing-sm);">Total:
+                                $<%= order.total.toLocaleString() %>
+                            </p>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: var(--spacing-md);">Shipping To</h4>
+                            <p class="text-muted">
+                                <%= orderOwner ? orderOwner.full_name : 'N/A' %>
+                            </p>
+                            <p class="text-muted">
+                                <%= orderOwner ? orderOwner.address : order.shipping_address %>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Items -->
+                    <h4 style="margin-bottom: var(--spacing-md);">Items</h4>
+                    <div>
+                        <% order.items.forEach(function(item) { %>
+                            <div
+                                style="display: flex; justify-content: space-between; padding: var(--spacing-md) 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                <span>
+                                    <%= item.name %> × <%= item.quantity %>
+                                </span>
+                                <span style="color: var(--color-gold);">$<%= (item.price *
+                                        item.quantity).toLocaleString() %></span>
+                            </div>
+                            <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

@@ -1,0 +1,81 @@
+<%- include('layouts/main', { title: title }) %>
+
+    <div style="padding-top: 120px; min-height: 100vh;">
+        <div class="container">
+            <h1 style="margin-bottom: var(--spacing-2xl);">My <span class="text-gold">Orders</span></h1>
+
+            <% if (orders.length> 0) { %>
+                <div style="display: flex; flex-direction: column; gap: var(--spacing-lg);">
+                    <% orders.forEach(function(order) { %>
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>
+                                    <span class="order-id">#<%= order.id %></span>
+                                    <span class="text-muted" style="margin-left: var(--spacing-md);">
+                                        <%= new Date(order.created_at).toLocaleDateString() %>
+                                    </span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                                    <span class="order-status status-<%= order.status %>">
+                                        <%= order.status %>
+                                    </span>
+                                    <span style="color: var(--color-gold); font-weight: 600;">$<%=
+                                            order.total.toLocaleString() %></span>
+                                </div>
+                            </div>
+                            <div class="order-body">
+                                <div class="order-items">
+                                    <% order.items.forEach(function(item) { %>
+                                        <div class="order-item">
+                                            <div class="order-item-image">
+                                                <div
+                                                    style="width: 100%; height: 100%; background: var(--color-gray); display: flex; align-items: center; justify-content: center;">
+                                                    📦</div>
+                                            </div>
+                                            <div>
+                                                <p style="font-weight: 500;">
+                                                    <%= item.name %>
+                                                </p>
+                                                <p class="text-muted" style="font-size: 0.85rem;">Qty: <%= item.quantity
+                                                        %> × $<%= item.price.toLocaleString() %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                </div>
+                                <div style="margin-top: var(--spacing-lg); display: flex; gap: var(--spacing-md); flex-wrap: wrap; align-items: center;">
+                                    <a href="/orders/<%= order.id %>" class="btn btn-primary btn-sm">View Details</a>
+                                    <% if (order.tracking_number) { %>
+                                        <a href="/orders/track/<%= order.tracking_number %>"
+                                            class="btn btn-secondary btn-sm">Track Order</a>
+                                    <% } %>
+                                    <a href="/orders/invoice?file=invoice_<%= order.id %>.txt"
+                                        class="btn btn-sm"
+                                        style="background: transparent; border: 1px solid var(--color-gold); color: var(--color-gold); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; transition: all 0.2s;"
+                                        onmouseover="this.style.background='var(--color-gold)';this.style.color='#000';"
+                                        onmouseout="this.style.background='transparent';this.style.color='var(--color-gold)';">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                                        </svg>
+                                        Download Invoice
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                        <% }); %>
+                </div>
+                <% } else { %>
+                    <div style="text-align: center; padding: var(--spacing-3xl);">
+                        <div style="font-size: 4rem; margin-bottom: var(--spacing-lg);">📦</div>
+                        <h2>No orders yet</h2>
+                        <p class="text-muted" style="margin: var(--spacing-md) 0 var(--spacing-xl);">Start shopping to
+                            place your first order.</p>
+                        <a href="/products" class="btn btn-primary btn-lg">Browse Products</a>
+                    </div>
+                    <% } %>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

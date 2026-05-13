@@ -1,0 +1,43 @@
+════════════════════════════════════════════════════════════
+         LUXEMART — OFFICIAL INVOICE
+         Premium E-Commerce · luxemart.com
+════════════════════════════════════════════════════════════
+
+  Invoice No    : LUX-INV-000006
+  Order ID      : #6
+  Date          : February 25, 2026
+  Status        : Paid
+  Tracking No   : LUX-2024-001235
+
+────────────────────────────────────────────────────────────
+  BILL TO
+────────────────────────────────────────────────────────────
+  Name          : Peter Parker
+  Email         : peter@dailybugle.com
+  Phone         : +1-555-0101
+  Address       : 456 Oak Avenue, Los Angeles, CA 90001
+
+────────────────────────────────────────────────────────────
+  ITEMS ORDERED
+────────────────────────────────────────────────────────────
+  Description                    Qty   Unit Price Total   
+  ─────────────────────────────  ────  ─────────  ─────── 
+  Classic Flap Medium            1     $8999.99   $8999.99
+
+────────────────────────────────────────────────────────────
+                                        Subtotal : $8999.99
+                             Shipping & Handling : $9.99
+                                        Tax (8%) : $720.00
+────────────────────────────────────────────────────────────
+                                      TOTAL PAID : $9729.98
+────────────────────────────────────────────────────────────
+
+  PAYMENT DETAILS
+  Method        : CREDIT_CARD
+  Card          : **** **** **** 1098
+
+════════════════════════════════════════════════════════════
+  Thank you for shopping at LuxeMart!
+  For support: support@luxemart.com  |  +1 (800) LUX-MART
+  This is a computer-generated invoice. No signature required.
+════════════════════════════════════════════════════════════

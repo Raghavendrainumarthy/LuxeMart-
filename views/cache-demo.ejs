@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache Attack Demo - LuxeMart Security Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: #0a0a0f;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .demo-page {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 24px 80px;
+        }
+
+        .page-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .page-sub {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 28px;
+        }
+
+        .warning-banner {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 10px;
+            padding: 12px 18px;
+            color: #f87171;
+            font-size: 0.83rem;
+            margin-bottom: 28px;
+        }
+
+        .demo-section {
+            background: #111118;
+            border: 1px solid #1e1e2e;
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 28px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .badge-vuln {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .section-desc {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        hr.divider {
+            border: none;
+            border-top: 1px solid #1e1e2e;
+            margin: 20px 0;
+        }
+
+        .attack-flow {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .flow-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid #1e1e2e;
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-size: 0.78rem;
+            color: #94a3b8;
+        }
+
+        .flow-box.victim {
+            border-color: rgba(134, 239, 172, 0.35);
+            color: #86efac;
+        }
+
+        .flow-box.attacker {
+            border-color: rgba(239, 68, 68, 0.35);
+            color: #f87171;
+        }
+
+        .flow-box.server {
+            border-color: rgba(212, 175, 55, 0.35);
+            color: #d4af37;
+        }
+
+        .flow-arrow {
+            color: #d4af37;
+            font-size: 1rem;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: step;
+        }
+
+        .step-list li {
+            counter-increment: step;
+            display: flex;
+            gap: 14px;
+            margin-bottom: 18px;
+            align-items: flex-start;
+        }
+
+        .step-list li::before {
+            content: counter(step);
+            min-width: 26px;
+            height: 26px;
+            background: #d4af37;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-body {
+            flex: 1;
+        }
+
+        .step-body strong {
+            color: #e2e8f0;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .step-body p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin: 0 0 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid #2d2d3d;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            color: #d4af37;
+        }
+
+        .btn-demo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.83rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-red {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-red:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-gold {
+            background: rgba(212, 175, 55, 0.1);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-gold:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-gray {
+            background: rgba(255, 255, 255, 0.04);
+            color: #94a3b8;
+            border: 1px solid #2d2d3d;
+        }
+
+        .btn-gray:hover {
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        .result-box {
+            background: #0a0a0f;
+            border: 1px solid #1e1e2e;
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-top: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #86efac;
+            white-space: pre-wrap;
+            display: none;
+            line-height: 1.7;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .footer-note {
+            font-size: 0.8rem;
+            color: #4a5568;
+            margin-top: 10px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            text-decoration: none;
+            margin-bottom: 28px;
+        }
+
+        .back-link:hover {
+            color: #d4af37;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-page">
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back to LuxeMart</a>
+
+        <h1 class="page-title">🧪 Cache Attack Demo Lab</h1>
+        <p class="page-sub">Interactive demonstrations of Web Cache Deception &amp; Web Cache Poisoning vulnerabilities.
+        </p>
+
+        <div class="warning-banner">
+            ⚠️ <strong>Educational Lab Only.</strong> These vulnerabilities are intentionally implemented for security
+            training. Do not use on real systems.
+        </div>
+
+        <!-- ===================== WEB CACHE DECEPTION ===================== -->
+        <div class="demo-section">
+            <div class="section-header">
+                <i class="fas fa-user-secret" style="color:#f87171; font-size:1.3rem;"></i>
+                <span class="section-title">Web Cache Deception</span>
+                <span class="badge-vuln">High</span>
+            </div>
+            <p class="section-desc">
+                Trick the cache into storing a victim's private profile page under a URL that looks like a static asset
+                (<code>/profile/x.css</code>).
+                An attacker then fetches that URL without authentication to steal sensitive data.
+            </p>
+
+            <div class="attack-flow">
+                <div class="flow-box victim">👤 Victim (logged in)</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box server">visits /profile/x.css</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box server">Profile gets cached</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box attacker">🔴 Attacker visits same URL</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box attacker">Gets victim's data!</div>
+            </div>
+
+            <hr class="divider">
+
+            <ol class="step-list">
+                <li>
+                    <div class="step-body">
+                        <strong>Login as peter (victim)</strong>
+                        <p>Go to <a href="/login" style="color:#d4af37;">/login</a> → username: <code>peter</code>
+                            &nbsp; password: <code>camera</code></p>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-body">
+                        <strong>Visit the deception URL while logged in</strong>
+                        <p>This caches peter's private profile page under a fake CSS filename.</p>
+                        <a href="/profile/x.css" target="_blank" class="btn-demo btn-gold">
+                            <i class="fas fa-external-link-alt"></i> Open /profile/x.css (as Victim)
+                        </a>
+                        <p style="margin-top:8px; font-size:0.78rem; color:#4a5568;">Check DevTools → Network → Response
+                            Headers for <code>X-Cache-Status: MISS</code></p>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-body">
+                        <strong>Logout (switch to attacker perspective)</strong>
+                        <p><a href="/logout" style="color:#d4af37;">/logout</a> — the attacker is not logged in.</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-body">
+                        <strong>Attacker steals the cached profile</strong>
+                        <p>Fetch <code>/profile/x.css</code> without a session cookie. The server returns the cached
+                            profile!</p>
+                        <button class="btn-demo btn-red" onclick="testDeception()">
+                            <i class="fas fa-fire"></i> Run Exploit (as Attacker)
+                        </button>
+                        <div class="result-box" id="deception-result"></div>
+                    </div>
+                </li>
+            </ol>
+
+            <hr class="divider">
+            <button class="btn-demo btn-gray" onclick="clearCache()">
+                <i class="fas fa-rotate-left"></i> Reset Cache
+            </button>
+            <span id="cache-clear-msg"
+                style="margin-left:12px; font-size:0.82rem; color:#86efac; display:none; vertical-align:middle;">✓ Cache
+                cleared — repeat from Step 1</span>
+        </div>
+
+        <!-- ===================== WEB CACHE POISONING ===================== -->
+        <div class="demo-section">
+            <div class="section-header">
+                <i class="fas fa-biohazard" style="color:#f87171; font-size:1.3rem;"></i>
+                <span class="section-title">Web Cache Poisoning</span>
+                <span class="badge-vuln">Critical</span>
+            </div>
+            <p class="section-desc">
+                Inject a malicious <code>X-Forwarded-Host</code> header. The server trusts it and reflects it in the
+                <code>&lt;link rel="canonical"&gt;</code> tag.
+                When the CDN caches this poisoned response, every user receives a page pointing to
+                <code>evil-attacker.com</code>.
+            </p>
+
+            <div class="attack-flow">
+                <div class="flow-box attacker">🔴 Attacker sends X-Forwarded-Host: evil.com</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box server">Server reflects in HTML</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box server">CDN caches poisoned page</div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-box victim">👤 All users receive evil.com link</div>
+            </div>
+
+            <hr class="divider">
+
+            <ol class="step-list">
+                <li>
+                    <div class="step-body">
+                        <strong>Send a poisoned request</strong>
+                        <p>Click below to send a request to the homepage with
+                            <code>X-Forwarded-Host: evil-attacker.com</code>.</p>
+                        <button class="btn-demo btn-red" onclick="testPoisoning()">
+                            <i class="fas fa-syringe"></i> Send Poisoned Request
+                        </button>
+                        <div class="result-box" id="poisoning-result"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-body">
+                        <strong>See the canonical tag injection</strong>
+                        <p>The response will contain
+                            <code>&lt;link rel="canonical" href="http://evil-attacker.com/"&gt;</code> — injected into
+                            the head of the page.</p>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-body">
+                        <strong>Why it's dangerous</strong>
+                        <p>If a caching proxy stores this response, every subsequent visitor gets the poisoned version.
+                            This enables phishing, SEO hijacking, and malicious script injection.</p>
+                        <p class="footer-note">Vulnerable line: <code>server.js:64</code> —
+                            <code>res.locals.hostHeader = req.headers['x-forwarded-host'] || req.headers['host']</code>
+                        </p>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function testDeception() {
+            const box = document.getElementById('deception-result');
+            box.className = 'result-box show';
+            box.style.color = '#94a3b8';
+            box.textContent = 'Fetching /profile/x.css without session cookie...';
+            try {
+                const resp = await fetch('/profile/x.css', { credentials: 'omit' });
+                const cacheStatus = resp.headers.get('X-Cache-Status') || 'not set';
+                const text = await resp.text();
+                const hasPeter = text.includes('peter');
+                const hasProfile = text.includes('Profile') || text.includes('LuxeMart');
+
+                const success = cacheStatus === 'HIT';
+                box.style.color = success ? '#86efac' : '#f87171';
+                box.textContent = [
+                    '> GET /profile/x.css  (no cookie)',
+                    '> Status: ' + resp.status,
+                    '> X-Cache-Status: ' + cacheStatus,
+                    '',
+                    success
+                        ? '✅ EXPLOIT SUCCESS! Cache returned victim\'s profile without authentication!'
+                        : cacheStatus === 'MISS'
+                            ? '⚠️  Cache MISS — Victim has not visited /profile/x.css yet.\n   Complete Steps 1–2 first, then come back and run this again.'
+                            : '❌ Cache not populated. Complete Step 1 & 2 and try again.',
+                    '',
+                    'Victim data leaked: ' + (hasPeter ? '✅  peter\'s data found in response!' : '❌  Not found')
+                ].join('\n');
+            } catch (e) {
+                box.style.color = '#f87171';
+                box.textContent = 'Error: ' + e.message;
+            }
+        }
+
+        async function testPoisoning() {
+            const box = document.getElementById('poisoning-result');
+            box.className = 'result-box show';
+            box.style.color = '#94a3b8';
+            box.textContent = 'Sending request with X-Forwarded-Host: evil-attacker.com...';
+            try {
+                const resp = await fetch('/', { headers: { 'X-Forwarded-Host': 'evil-attacker.com' } });
+                const text = await resp.text();
+                const match = text.match(/<link[^>]*canonical[^>]*>/);
+                const injected = text.includes('evil-attacker.com');
+
+                box.style.color = injected ? '#86efac' : '#f87171';
+                box.textContent = [
+                    '> GET /  (X-Forwarded-Host: evil-attacker.com)',
+                    '> Status: ' + resp.status,
+                    '',
+                    injected
+                        ? '✅ EXPLOIT SUCCESS! Malicious host reflected in response!'
+                        : '❌ Host not found in response.',
+                    '',
+                    'Canonical tag found: ' + (match ? '\n  ' + match[0] : 'not found'),
+                ].join('\n');
+            } catch (e) {
+                box.style.color = '#f87171';
+                box.textContent = 'Error: ' + e.message;
+            }
+        }
+
+        async function clearCache() {
+            try {
+                await fetch('/clear-cache');
+                const msg = document.getElementById('cache-clear-msg');
+                msg.style.display = 'inline';
+                setTimeout(() => { msg.style.display = 'none'; }, 4000);
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+    </script>
+</body>
+
+</html>

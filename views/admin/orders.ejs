@@ -1,0 +1,77 @@
+<%- include('../layouts/main', { title: title }) %>
+
+    <div style="padding-top: 120px; min-height: 100vh;">
+        <div class="container">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-2xl);">
+                <h1>Order <span class="text-gold">Management</span></h1>
+                <a href="/admin" class="btn btn-secondary">← Back to Dashboard</a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Email</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% orders.forEach(function(order) { %>
+                                    <tr>
+                                        <td>#<%= order.id %>
+                                        </td>
+                                        <td>
+                                            <%= order.username %>
+                                        </td>
+                                        <td>
+                                            <%= order.email %>
+                                        </td>
+                                        <td>
+                                            <%= order.items.length %> items
+                                        </td>
+                                        <td style="color: var(--color-gold); font-weight: 600;">$<%=
+                                                order.total.toLocaleString() %>
+                                        </td>
+                                        <td><span class="order-status status-<%= order.status %>">
+                                                <%= order.status %>
+                                            </span></td>
+                                        <td>
+                                            <%= new Date(order.created_at).toLocaleDateString() %>
+                                        </td>
+                                        <td>
+                                            <form action="/admin/orders/<%= order.id %>/status" method="POST"
+                                                style="display: flex; gap: 8px;">
+                                                <select name="status" class="form-input"
+                                                    style="padding: 4px 8px; font-size: 0.8rem;">
+                                                    <option value="pending" <%=order.status==='pending' ? 'selected'
+                                                        : '' %>>Pending</option>
+                                                    <option value="processing" <%=order.status==='processing'
+                                                        ? 'selected' : '' %>>Processing</option>
+                                                    <option value="shipped" <%=order.status==='shipped' ? 'selected'
+                                                        : '' %>>Shipped</option>
+                                                    <option value="delivered" <%=order.status==='delivered' ? 'selected'
+                                                        : '' %>>Delivered</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

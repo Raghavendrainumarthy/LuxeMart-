@@ -1,0 +1,43 @@
+════════════════════════════════════════════════════════════
+         LUXEMART — OFFICIAL INVOICE
+         Premium E-Commerce · luxemart.com
+════════════════════════════════════════════════════════════
+
+  Invoice No    : LUX-INV-000004
+  Order ID      : #4
+  Date          : February 25, 2026
+  Status        : Paid
+  Tracking No   : LUX-2024-001004
+
+────────────────────────────────────────────────────────────
+  BILL TO
+────────────────────────────────────────────────────────────
+  Name          : Admin User
+  Email         : admin@luxemart.com
+  Phone         : +1-555-0100
+  Address       : 123 Admin Street, New York, NY 10001
+
+────────────────────────────────────────────────────────────
+  ITEMS ORDERED
+────────────────────────────────────────────────────────────
+  Description                    Qty   Unit Price Total   
+  ─────────────────────────────  ────  ─────────  ─────── 
+  Cashmere Overcoat              1     $3499.99   $3499.99
+
+────────────────────────────────────────────────────────────
+                                        Subtotal : $3499.99
+                             Shipping & Handling : $9.99
+                                        Tax (8%) : $280.00
+────────────────────────────────────────────────────────────
+                                      TOTAL PAID : $3789.98
+────────────────────────────────────────────────────────────
+
+  PAYMENT DETAILS
+  Method        : CREDIT_CARD
+  Card          : **** **** **** 9012
+
+════════════════════════════════════════════════════════════
+  Thank you for shopping at LuxeMart!
+  For support: support@luxemart.com  |  +1 (800) LUX-MART
+  This is a computer-generated invoice. No signature required.
+════════════════════════════════════════════════════════════

@@ -1,0 +1,43 @@
+════════════════════════════════════════════════════════════
+         LUXEMART — OFFICIAL INVOICE
+         Premium E-Commerce · luxemart.com
+════════════════════════════════════════════════════════════
+
+  Invoice No    : LUX-INV-000013
+  Order ID      : #13
+  Date          : February 25, 2026
+  Status        : Paid
+  Tracking No   : LUX-2024-001250
+
+────────────────────────────────────────────────────────────
+  BILL TO
+────────────────────────────────────────────────────────────
+  Name          : Marry Jane
+  Email         : mj@example.com
+  Phone         : +1-555-0102
+  Address       : 789 Maple Drive, Chicago, IL 60601
+
+────────────────────────────────────────────────────────────
+  ITEMS ORDERED
+────────────────────────────────────────────────────────────
+  Description                    Qty   Unit Price Total   
+  ─────────────────────────────  ────  ─────────  ─────── 
+  Silk Evening Gown              1     $2899.99   $2899.99
+
+────────────────────────────────────────────────────────────
+                                        Subtotal : $2899.99
+                             Shipping & Handling : $9.99
+                                        Tax (8%) : $232.00
+────────────────────────────────────────────────────────────
+                                      TOTAL PAID : $3141.98
+────────────────────────────────────────────────────────────
+
+  PAYMENT DETAILS
+  Method        : CREDIT_CARD
+  Card          : **** **** **** 7777
+
+════════════════════════════════════════════════════════════
+  Thank you for shopping at LuxeMart!
+  For support: support@luxemart.com  |  +1 (800) LUX-MART
+  This is a computer-generated invoice. No signature required.
+════════════════════════════════════════════════════════════

@@ -1,0 +1,485 @@
+<%- include('layouts/main', { title: title }) %>
+
+    <div style="padding-top: 120px; min-height: 100vh;">
+        <div class="container">
+            <div class="products-header">
+                <h1>Shop <span class="text-gold">All</span></h1>
+                <p class="text-muted">Discover our curated collection of luxury items</p>
+                <% if (search) { %>
+                    <!-- VULNERABLE: Reflected XSS - search term displayed without sanitization -->
+                    <div
+                        style="margin-top: var(--spacing-lg); padding: var(--spacing-md); background: var(--color-gray); border-radius: var(--radius-md);">
+                        <p>Showing results for: <strong><%- search %></strong></p>
+                    </div>
+                    <% } %>
+            </div>
+
+            <!-- Filters -->
+            <style>
+                .lux-select-wrap {
+                    position: relative;
+                    min-width: 200px;
+                }
+
+                .lux-select-wrap label {
+                    display: block;
+                    font-size: 0.75rem;
+                    font-weight: 600;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: #6b7280;
+                    margin-bottom: 8px;
+                }
+
+                .lux-trigger {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 12px 16px;
+                    background: rgba(255, 255, 255, 0.04);
+                    border: 1px solid rgba(212, 175, 55, 0.25);
+                    border-radius: 10px;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    color: #e2e8f0;
+                    font-family: inherit;
+                    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+                    user-select: none;
+                    min-height: 48px;
+                    backdrop-filter: blur(8px);
+                }
+
+                .lux-trigger:hover {
+                    border-color: rgba(212, 175, 55, 0.6);
+                    background: rgba(255, 255, 255, 0.07);
+                }
+
+                .lux-trigger.open {
+                    border-color: #d4af37;
+                    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+                    background: rgba(255, 255, 255, 0.06);
+                }
+
+                .lux-chevron {
+                    width: 16px;
+                    height: 16px;
+                    flex-shrink: 0;
+                    color: #d4af37;
+                    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+                }
+
+                .lux-trigger.open .lux-chevron {
+                    transform: rotate(180deg);
+                }
+
+                .lux-dropdown {
+                    position: absolute;
+                    top: calc(100% + 6px);
+                    left: 0;
+                    right: 0;
+                    z-index: 9999;
+                    background: #13131a;
+                    border: 1px solid rgba(212, 175, 55, 0.3);
+                    border-radius: 12px;
+                    overflow: hidden;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(212, 175, 55, 0.08);
+                    transform: translateY(-6px) scaleY(0.95);
+                    transform-origin: top;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.18s ease;
+                    backdrop-filter: blur(20px);
+                    max-height: 280px;
+                    overflow-y: auto;
+                }
+
+                .lux-dropdown::-webkit-scrollbar {
+                    width: 4px;
+                }
+
+                .lux-dropdown::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                .lux-dropdown::-webkit-scrollbar-thumb {
+                    background: rgba(212, 175, 55, 0.3);
+                    border-radius: 4px;
+                }
+
+                .lux-dropdown.open {
+                    transform: translateY(0) scaleY(1);
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+
+                .lux-option {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 11px 16px;
+                    font-size: 0.875rem;
+                    color: #94a3b8;
+                    cursor: pointer;
+                    transition: background 0.15s, color 0.15s;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                }
+
+                .lux-option:last-child {
+                    border-bottom: none;
+                }
+
+                .lux-option:hover {
+                    background: rgba(212, 175, 55, 0.08);
+                    color: #e2e8f0;
+                }
+
+                .lux-option.selected {
+                    color: #d4af37;
+                    font-weight: 600;
+                    background: rgba(212, 175, 55, 0.06);
+                }
+
+                .lux-option .lux-dot {
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: #d4af37;
+                    flex-shrink: 0;
+                    opacity: 0;
+                    transition: opacity 0.15s;
+                }
+
+                .lux-option.selected .lux-dot {
+                    opacity: 1;
+                }
+            </style>
+
+            <div class="products-filters" style="margin-bottom: 40px;">
+                <form action="/products" method="GET" id="filters-form"
+                    style="display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap;">
+
+                    <!-- Hidden native selects for form submission -->
+                    <select name="category" id="cat-select" style="display:none">
+                        <option value="">All Categories</option>
+                        <% categories.forEach(function(cat) { %>
+                            <option value="<%= cat %>" <%=currentCategory===cat ? 'selected' : '' %>><%= cat %>
+                            </option>
+                            <% }); %>
+                    </select>
+                    <select name="sort" id="sort-select" style="display:none">
+                        <option value="" <%=currentSort==='' ? 'selected' : '' %>>Featured</option>
+                        <option value="price_asc" <%=currentSort==='price_asc' ? 'selected' : '' %>>Price: Low to High
+                        </option>
+                        <option value="price_desc" <%=currentSort==='price_desc' ? 'selected' : '' %>>Price: High to Low
+                        </option>
+                        <option value="newest" <%=currentSort==='newest' ? 'selected' : '' %>>Newest</option>
+                        <option value="rating" <%=currentSort==='rating' ? 'selected' : '' %>>Highest Rated</option>
+                    </select>
+
+                    <!-- Premium Category Dropdown -->
+                    <div class="lux-select-wrap">
+                        <label>Category</label>
+                        <div class="lux-trigger" id="cat-trigger" tabindex="0">
+                            <span id="cat-label">
+                                <%= currentCategory || 'All Categories' %>
+                            </span>
+                            <svg class="lux-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </div>
+                        <div class="lux-dropdown" id="cat-dropdown">
+                            <div class="lux-option <%= !currentCategory ? 'selected' : '' %>" data-value=""
+                                data-target="cat-select" data-label="All Categories">
+                                <span class="lux-dot"></span> All Categories
+                            </div>
+                            <% categories.forEach(function(cat) { %>
+                                <div class="lux-option <%= currentCategory===cat ? 'selected' : '' %>"
+                                    data-value="<%= cat %>" data-target="cat-select" data-label="<%= cat %>">
+                                    <span class="lux-dot"></span>
+                                    <%= cat %>
+                                </div>
+                                <% }); %>
+                        </div>
+                    </div>
+
+                    <!-- Premium Sort Dropdown -->
+                    <div class="lux-select-wrap">
+                        <label>Sort By</label>
+                        <div class="lux-trigger" id="sort-trigger" tabindex="0">
+                            <span id="sort-label">
+                                <%= currentSort==='price_asc' ? 'Price: Low to High' : currentSort==='price_desc'
+                                    ? 'Price: High to Low' : currentSort==='newest' ? 'Newest' : currentSort==='rating'
+                                    ? 'Highest Rated' : 'Featured' %>
+                            </span>
+                            <svg class="lux-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                        </div>
+                        <div class="lux-dropdown" id="sort-dropdown">
+                            <div class="lux-option <%= currentSort==='' ? 'selected' : '' %>" data-value=""
+                                data-target="sort-select" data-label="Featured"><span class="lux-dot"></span> Featured
+                            </div>
+                            <div class="lux-option <%= currentSort==='price_asc' ? 'selected' : '' %>"
+                                data-value="price_asc" data-target="sort-select" data-label="Price: Low to High"><span
+                                    class="lux-dot"></span> Price: Low to High</div>
+                            <div class="lux-option <%= currentSort==='price_desc' ? 'selected' : '' %>"
+                                data-value="price_desc" data-target="sort-select" data-label="Price: High to Low"><span
+                                    class="lux-dot"></span> Price: High to Low</div>
+                            <div class="lux-option <%= currentSort==='newest' ? 'selected' : '' %>" data-value="newest"
+                                data-target="sort-select" data-label="Newest"><span class="lux-dot"></span> Newest</div>
+                            <div class="lux-option <%= currentSort==='rating' ? 'selected' : '' %>" data-value="rating"
+                                data-target="sort-select" data-label="Highest Rated"><span class="lux-dot"></span>
+                                Highest Rated</div>
+                        </div>
+                    </div>
+
+                    <!-- Search -->
+                    <style>
+                        .lux-search-wrap {
+                            flex: 1;
+                            min-width: 300px;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 8px;
+                        }
+
+                        .lux-search-wrap>label {
+                            font-size: 0.75rem;
+                            font-weight: 600;
+                            letter-spacing: 0.08em;
+                            text-transform: uppercase;
+                            color: #6b7280;
+                        }
+
+                        .lux-search-row {
+                            display: flex;
+                            align-items: stretch;
+                            gap: 10px;
+                        }
+
+                        .lux-search-inner {
+                            flex: 1;
+                            position: relative;
+                            display: flex;
+                            align-items: center;
+                        }
+
+                        .lux-search-icon {
+                            position: absolute;
+                            left: 14px;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            color: #d4af37;
+                            pointer-events: none;
+                            width: 18px;
+                            height: 18px;
+                            flex-shrink: 0;
+                            opacity: 0.7;
+                            transition: opacity 0.2s;
+                        }
+
+                        .lux-search-input {
+                            width: 100%;
+                            padding: 12px 16px 12px 44px;
+                            background: rgba(255, 255, 255, 0.04);
+                            border: 1px solid rgba(212, 175, 55, 0.25);
+                            border-radius: 10px;
+                            color: #e2e8f0;
+                            font-size: 0.9rem;
+                            font-family: inherit;
+                            min-height: 48px;
+                            outline: none;
+                            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+
+                        }
+
+                        .lux-search-input::placeholder {
+                            color: #4b5563;
+                        }
+
+                        .lux-search-input:focus {
+                            border-color: #d4af37;
+                            background: rgba(255, 255, 255, 0.06);
+                            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12), 0 0 20px rgba(212, 175, 55, 0.05);
+                        }
+
+                        .lux-search-input:focus+.lux-search-icon,
+                        .lux-search-inner:focus-within .lux-search-icon {
+                            opacity: 1;
+                        }
+
+                        .lux-search-btn {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            padding: 0 22px;
+                            height: 48px;
+                            background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+                            color: #0a0a0c;
+                            border: none;
+                            border-radius: 10px;
+                            font-size: 0.85rem;
+                            font-weight: 700;
+                            letter-spacing: 0.06em;
+                            text-transform: uppercase;
+                            font-family: inherit;
+                            cursor: pointer;
+                            transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+                            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+                            flex-shrink: 0;
+                        }
+
+                        .lux-search-btn:hover {
+                            opacity: 0.9;
+                            transform: translateY(-1px);
+                            box-shadow: 0 8px 28px rgba(212, 175, 55, 0.35);
+                        }
+
+                        .lux-search-btn:active {
+                            transform: translateY(0);
+                        }
+                    </style>
+                    <div class="lux-search-wrap">
+                        <label>Search</label>
+                        <div class="lux-search-row">
+                            <div class="lux-search-inner">
+                                <svg class="lux-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round">
+                                    <circle cx="11" cy="11" r="7" />
+                                    <line x1="16.5" y1="16.5" x2="22" y2="22" />
+                                </svg>
+                                <input type="text" name="search" value="<%= search %>" placeholder="Search products..."
+                                    class="lux-search-input" autocomplete="off">
+                            </div>
+                            <button type="submit" class="lux-search-btn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round">
+                                    <circle cx="11" cy="11" r="7" />
+                                    <line x1="16.5" y1="16.5" x2="22" y2="22" />
+                                </svg>
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <script>
+                (function () {
+                    function initDropdown(triggerId, dropdownId) {
+                        const trigger = document.getElementById(triggerId);
+                        const dropdown = document.getElementById(dropdownId);
+                        if (!trigger || !dropdown) return;
+
+                        trigger.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            const isOpen = trigger.classList.contains('open');
+                            closeAll();
+                            if (!isOpen) { trigger.classList.add('open'); dropdown.classList.add('open'); }
+                        });
+
+                        dropdown.querySelectorAll('.lux-option').forEach(function (opt) {
+                            opt.addEventListener('click', function () {
+                                const val = opt.dataset.value;
+                                const label = opt.dataset.label;
+                                const targetId = opt.dataset.target;
+                                const sel = document.getElementById(targetId);
+                                if (sel) sel.value = val;
+                                trigger.querySelector('span:first-child').textContent = label;
+                                dropdown.querySelectorAll('.lux-option').forEach(o => o.classList.remove('selected'));
+                                opt.classList.add('selected');
+                                trigger.classList.remove('open');
+                                dropdown.classList.remove('open');
+                                document.getElementById('filters-form').submit();
+                            });
+                        });
+                    }
+
+                    function closeAll() {
+                        document.querySelectorAll('.lux-trigger').forEach(t => t.classList.remove('open'));
+                        document.querySelectorAll('.lux-dropdown').forEach(d => d.classList.remove('open'));
+                    }
+
+                    document.addEventListener('click', closeAll);
+                    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+
+                    initDropdown('cat-trigger', 'cat-dropdown');
+                    initDropdown('sort-trigger', 'sort-dropdown');
+                })();
+            </script>
+
+            <!-- Products Grid -->
+            <% if (products.length> 0) { %>
+                <div class="products-grid">
+                    <% products.forEach(function(product) { %>
+                        <div class="product-card animate-fade-in" style="position: relative;">
+                            <button
+                                class="product-wishlist <%= (typeof wishlist !== 'undefined' && wishlist.has(product.id)) ? 'active' : '' %>"
+                                data-product-id="<%= product.id %>" data-product-name="<%= product.name %>">
+                                <i
+                                    class="<%= (typeof wishlist !== 'undefined' && wishlist.has(product.id)) ? 'fas' : 'far' %> fa-heart"></i>
+                            </button>
+                            <a href="/products/<%= product.id %>">
+                                <div class="product-image">
+                                    <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy"
+                                        onerror="this.onerror=null; this.src=''; this.style.background='linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)'; this.style.minHeight='200px';">
+                                    <% if (product.original_price> product.price) { %>
+                                        <span class="product-badge">Sale</span>
+                                        <% } %>
+                                            <% if (product.featured) { %>
+                                                <span class="product-badge"
+                                                    style="background: var(--color-gold); color: var(--color-black); left: auto; right: 12px;">Featured</span>
+                                                <% } %>
+                                </div>
+                            </a>
+                            <div class="product-info">
+                                <span class="product-category">
+                                    <%= product.category %>
+                                </span>
+                                <h3 class="product-name">
+                                    <a href="/products/<%= product.id %>">
+                                        <%= product.name %>
+                                    </a>
+                                </h3>
+                                <div class="product-rating">
+                                    <span class="stars">
+                                        <%= '★' .repeat(Math.floor(product.rating)) %>
+                                            <%= '☆' .repeat(5 - Math.floor(product.rating)) %>
+                                    </span>
+                                    <span class="text-muted">(<%= product.reviews_count || 0 %>)</span>
+                                </div>
+                                <div class="product-price">
+                                    <span class="price-current">$<%= product.price.toLocaleString() %>
+                                    </span>
+                                    <% if (product.original_price> product.price) { %>
+                                        <span class="price-original">$<%= product.original_price.toLocaleString() %>
+                                        </span>
+                                        <% } %>
+                                </div>
+                            </div>
+                            <div class="product-actions">
+                                <form action="/cart/add" method="POST">
+                                    <input type="hidden" name="productId" value="<%= product.id %>">
+                                    <button type="submit" class="btn btn-add-cart">Add to Cart</button>
+                                </form>
+                            </div>
+                        </div>
+                        <% }); %>
+                </div>
+                <% } else { %>
+                    <div style="text-align: center; padding: var(--spacing-3xl);">
+                        <div style="font-size: 4rem; margin-bottom: var(--spacing-lg);">🔍</div>
+                        <h2>No products found</h2>
+                        <p class="text-muted" style="margin: var(--spacing-md) 0;">Try adjusting your
+                            search or
+                            filter criteria.</p>
+                        <a href="/products" class="btn btn-primary">View All Products</a>
+                    </div>
+                    <% } %>
+        </div>
+    </div>
+
+    <script src="/static/js/wishlist.js"></script>
+    <%- include('partials/footer') %>

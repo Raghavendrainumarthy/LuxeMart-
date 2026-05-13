@@ -1,0 +1,42 @@
+{
+  "bath_set": [],
+  "table_lamp2": [
+    {
+      "id": "RWUokYrMHFA",
+      "desc": "A lit lamp glows beside its reflection.",
+      "url": "https://images.unsplash.com/photo-1752916140847-abae939c6c59"
+    },
+    {
+      "id": "sr_qf4MrXC8",
+      "desc": "A bedside lamp sits on a glass-top nightstand.",
+      "url": "https://images.unsplash.com/photo-1767979066193-83dffc4a4f3e"
+    },
+    {
+      "id": "zpkTfXlhbUo",
+      "desc": "white table lamp on brown wooden table",
+      "url": "https://images.unsplash.com/photo-1589335429144-328a42be176e"
+    },
+    {
+      "id": "x8sn114N81s",
+      "desc": "A bedside table with a lamp and decor.",
+      "url": "https://images.unsplash.com/photo-1763478959023-8528a9d44a59"
+    },
+    {
+      "id": "SU-Yw_pkpn4",
+      "desc": "gray metal base white lampshade on nightstand",
+      "url": "https://images.unsplash.com/photo-1505658862213-162b60255cb6"
+    }
+  ],
+  "gloves_pair": [
+    {
+      "id": "ZSTRCczhpEU",
+      "desc": "a close up of a person wearing a brown jacket",
+      "url": "https://images.unsplash.com/photo-1700168077358-692db90c8b7f"
+    },
+    {
+      "id": "XOhllqKs_I4",
+      "desc": "A person holds a stylish black leather handbag.",
+      "url": "https://images.unsplash.com/photo-1760858403290-b6ec82b60e2e"
+    }
+  ]
+}

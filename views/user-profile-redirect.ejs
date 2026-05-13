@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+</head>
+<body>
+    <%# VULNERABLE: userId sent in POST body - interceptable in Burp, invisible in browser URL %>
+    <form id="idor-form" action="/user/profile" method="POST" style="display:none;">
+        <input type="hidden" name="userId" value="<%= userId %>">
+    </form>
+    <script>
+        // Auto-submit so the user sees no URL change but Burp captures userId in the request body
+        document.getElementById('idor-form').submit();
+    </script>
+</body>
+</html>

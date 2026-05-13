@@ -1,0 +1,43 @@
+════════════════════════════════════════════════════════════
+         LUXEMART — OFFICIAL INVOICE
+         Premium E-Commerce · luxemart.com
+════════════════════════════════════════════════════════════
+
+  Invoice No    : LUX-INV-000017
+  Order ID      : #17
+  Date          : February 25, 2026
+  Status        : Paid
+  Tracking No   : LUX-2024-001260
+
+────────────────────────────────────────────────────────────
+  BILL TO
+────────────────────────────────────────────────────────────
+  Name          : J Jonnah Jonhnsson
+  Email         : jonah@dailybugle.com
+  Phone         : +1-555-0103
+  Address       : 321 Demo Lane, San Francisco, CA 94102
+
+────────────────────────────────────────────────────────────
+  ITEMS ORDERED
+────────────────────────────────────────────────────────────
+  Description                    Qty   Unit Price Total   
+  ─────────────────────────────  ────  ─────────  ─────── 
+  Aviator Sunglasses             1     $450.00    $450.00 
+
+────────────────────────────────────────────────────────────
+                                        Subtotal : $450.00
+                             Shipping & Handling : $9.99
+                                        Tax (8%) : $36.00
+────────────────────────────────────────────────────────────
+                                      TOTAL PAID : $495.99
+────────────────────────────────────────────────────────────
+
+  PAYMENT DETAILS
+  Method        : CREDIT_CARD
+  Card          : **** **** **** 3333
+
+════════════════════════════════════════════════════════════
+  Thank you for shopping at LuxeMart!
+  For support: support@luxemart.com  |  +1 (800) LUX-MART
+  This is a computer-generated invoice. No signature required.
+════════════════════════════════════════════════════════════

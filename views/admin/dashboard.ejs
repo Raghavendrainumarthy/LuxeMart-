@@ -1,0 +1,202 @@
+<%- include('../layouts/main', { title: title }) %>
+
+    <div style="padding-top: 120px; min-height: 100vh;">
+        <div class="container">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-2xl);">
+                <div>
+                    <h1>Admin <span class="text-gold">Dashboard</span></h1>
+                    <p class="text-muted">Welcome back, <%= user.username %>
+                    </p>
+                </div>
+                <div style="display: flex; gap: var(--spacing-md);">
+                    <a href="/admin/users" class="btn btn-secondary">👥 Users</a>
+                    <a href="/admin/orders" class="btn btn-secondary">📦 Orders</a>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value">
+                        <%= userCount %>
+                    </div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-value">
+                        <%= productCount %>
+                    </div>
+                    <div class="stat-label">Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🛒</div>
+                    <div class="stat-value">
+                        <%= orderCount %>
+                    </div>
+                    <div class="stat-label">Orders</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-value">$<%= Math.round(revenue).toLocaleString() %>
+                    </div>
+                    <div class="stat-label">Total Revenue</div>
+                </div>
+            </div>
+
+            <!-- Data Export -->
+            <div class="card" style="margin-bottom: var(--spacing-xl);">
+                <div class="card-header">
+                    <h3>📊 Export Data</h3>
+                </div>
+                <div class="card-body">
+                    <form id="exportForm"
+                        style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; align-items: flex-end;">
+                        <div>
+                            <label class="form-label">Table</label>
+                            <select name="table" class="form-input">
+                                <option value="users">Users</option>
+                                <option value="products">Products</option>
+                                <option value="orders">Orders</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Format</label>
+                            <select name="format" class="form-input">
+                                <option value="csv">CSV</option>
+                                <option value="json">JSON</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="form-label">Filename</label>
+                            <input type="text" name="filename" class="form-input" placeholder="export" value="export">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Export</button>
+                    </form>
+                    <div id="exportResult" style="margin-top: var(--spacing-md);"></div>
+                </div>
+            </div>
+
+            <!-- File Downloads -->
+            <div class="card" style="margin-bottom: var(--spacing-xl);">
+                <div class="card-header">
+                    <h3>📁 File Downloads</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted" style="margin-bottom: var(--spacing-md);">Download exported files:</p>
+                    <div id="fileList"
+                        style="display: flex; flex-wrap: wrap; gap: var(--spacing-md); align-items: center;">
+                        <% if (typeof exportFiles !=='undefined' && exportFiles.length> 0) { %>
+                            <% exportFiles.forEach(function(file) { %>
+                                <a href="/admin/download?file=<%= file %>" class="btn btn-secondary btn-sm">📄 <%= file
+                                        %></a>
+                                <% }); %>
+                                    <% } else { %>
+                                        <span class="text-muted">No exported files available. Use the Export Data
+                                            feature above.</span>
+                                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Recent Orders</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% recentOrders.forEach(function(order) { %>
+                                    <tr>
+                                        <td>#<%= order.id %>
+                                        </td>
+                                        <td>
+                                            <%= order.username %>
+                                        </td>
+                                        <td style="color: var(--color-gold);">$<%= order.total.toLocaleString() %>
+                                        </td>
+                                        <td><span class="order-status status-<%= order.status %>">
+                                                <%= order.status %>
+                                            </span></td>
+                                        <td>
+                                            <%= new Date(order.created_at).toLocaleDateString() %>
+                                        </td>
+                                        <td>
+                                            <form action="/admin/orders/<%= order.id %>/status" method="POST"
+                                                style="display: flex; gap: 8px;">
+                                                <select name="status" class="form-input"
+                                                    style="padding: 4px 8px; font-size: 0.8rem;">
+                                                    <option value="pending" <%=order.status==='pending' ? 'selected'
+                                                        : '' %>>Pending</option>
+                                                    <option value="processing" <%=order.status==='processing'
+                                                        ? 'selected' : '' %>>Processing</option>
+                                                    <option value="shipped" <%=order.status==='shipped' ? 'selected'
+                                                        : '' %>>Shipped</option>
+                                                    <option value="delivered" <%=order.status==='delivered' ? 'selected'
+                                                        : '' %>>Delivered</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('exportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const result = document.getElementById('exportResult');
+
+            try {
+                const response = await fetch('/admin/export', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(formData))
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    result.innerHTML = '<div style="color: var(--color-success);">✓ ' + data.message + ' <a href="' + data.downloadUrl + '" class="btn btn-sm btn-secondary" style="margin-left: 10px;">Download</a></div>';
+
+                    // Add to file list
+                    const fileList = document.getElementById('fileList');
+                    const noFilesMsg = fileList.querySelector('.text-muted');
+                    if (noFilesMsg) noFilesMsg.remove();
+
+                    const filename = formData.get('filename') + '.txt';
+                    const link = document.createElement('a');
+                    link.href = data.downloadUrl;
+                    link.className = 'btn btn-secondary btn-sm';
+                    link.innerHTML = '📄 ' + filename;
+                    fileList.appendChild(link);
+                } else {
+                    result.innerHTML = '<div style="color: var(--color-error);">✗ Error: ' + data.error + '</div>';
+                }
+            } catch (err) {
+                result.innerHTML = '<div style="color: var(--color-error);">✗ Error: ' + err.message + '</div>';
+            }
+        });
+    </script>
+
+    <%- include('../partials/footer') %>

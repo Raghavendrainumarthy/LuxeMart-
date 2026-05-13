@@ -1,0 +1,121 @@
+<%- include('layouts/main', { title: title }) %>
+
+    <div style="padding-top: 120px; padding-bottom: var(--spacing-4xl); min-height: 100vh;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 300px 1fr; gap: var(--spacing-2xl);">
+                <!-- Sidebar -->
+                <%- include('partials/profile-sidebar', { activePage: activePage }) %>
+
+                    <!-- Main Content -->
+                    <div>
+                        <div class="card" style="margin-bottom: var(--spacing-xl);">
+                            <div class="card-body">
+                                <h2 style="margin-bottom: var(--spacing-lg);">Gift Cards</h2>
+
+                                <!-- Balance Card -->
+                                <div
+                                    style="background: var(--gradient-gold); padding: var(--spacing-xl); border-radius: var(--radius-lg); margin-bottom: var(--spacing-xl);">
+                                    <p
+                                        style="font-size: 0.85rem; color: var(--color-black); opacity: 0.7; margin-bottom: var(--spacing-sm);">
+                                        Total Active Balance</p>
+                                    <h1
+                                        style="color: var(--color-black); font-size: 2.5rem; margin-bottom: var(--spacing-md);">
+                                        $<%= balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %>
+                                    </h1>
+                                    <p style="font-size: 0.8rem; color: var(--color-black); opacity: 0.6;">
+                                        <%= giftCards.filter(c => c.status === 'active').length %> active card<%= giftCards.filter(c => c.status === 'active').length !== 1 ? 's' : '' %>
+                                    </p>
+                                </div>
+
+                                <!-- Gift Cards List -->
+                                <% if (giftCards && giftCards.length > 0) { %>
+                                <div style="margin-bottom: var(--spacing-xl);">
+                                    <h4 style="margin-bottom: var(--spacing-lg); display: flex; align-items: center; gap: 8px;">
+                                        🎁 Your Gift Cards
+                                    </h4>
+                                    <div style="display: grid; gap: var(--spacing-md);">
+                                        <% giftCards.forEach(function(card) {
+                                            let statusColor, statusBg, statusIcon;
+                                            if (card.status === 'active') {
+                                                statusColor = '#10b981';
+                                                statusBg = 'rgba(16, 185, 129, 0.1)';
+                                                statusIcon = '✓';
+                                            } else if (card.status === 'redeemed') {
+                                                statusColor = '#6b7280';
+                                                statusBg = 'rgba(107, 114, 128, 0.1)';
+                                                statusIcon = '✓✓';
+                                            } else {
+                                                statusColor = '#ef4444';
+                                                statusBg = 'rgba(239, 68, 68, 0.1)';
+                                                statusIcon = '✕';
+                                            }
+                                        %>
+                                        <div style="background: var(--color-dark-gray); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: var(--spacing-lg); display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; <% if (card.status === 'active') { %>border-left: 3px solid #10b981;<% } else { %>border-left: 3px solid rgba(107,114,128,0.3); opacity: 0.7;<% } %>">
+                                            <div style="flex: 1;">
+                                                <div style="display: flex; align-items: center; gap: var(--spacing-sm); margin-bottom: 8px;">
+                                                    <code style="font-family: 'OCR A Extended', 'Courier New', monospace; font-size: 0.95rem; color: var(--color-gold); letter-spacing: 1px; background: rgba(201,169,98,0.1); padding: 4px 10px; border-radius: var(--radius-sm);">
+                                                        <%= card.code %>
+                                                    </code>
+                                                    <span style="display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: var(--radius-full); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: <%= statusColor %>; background: <%= statusBg %>;">
+                                                        <%= statusIcon %> <%= card.status %>
+                                                    </span>
+                                                </div>
+                                                <div style="display: flex; gap: var(--spacing-xl); margin-top: 10px;">
+                                                    <div>
+                                                        <span style="font-size: 0.7rem; color: var(--color-light-gray); text-transform: uppercase; letter-spacing: 0.5px;">Original</span>
+                                                        <div style="font-size: 0.95rem; color: var(--text-secondary); margin-top: 2px;">
+                                                            $<%= card.original_amount.toLocaleString('en-US', { minimumFractionDigits: 2 }) %>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <span style="font-size: 0.7rem; color: var(--color-light-gray); text-transform: uppercase; letter-spacing: 0.5px;">Remaining</span>
+                                                        <div style="font-size: 0.95rem; color: <%= card.balance > 0 ? '#10b981' : 'var(--text-secondary)' %>; font-weight: 600; margin-top: 2px;">
+                                                            $<%= card.balance.toLocaleString('en-US', { minimumFractionDigits: 2 }) %>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <span style="font-size: 0.7rem; color: var(--color-light-gray); text-transform: uppercase; letter-spacing: 0.5px;">Expires</span>
+                                                        <div style="font-size: 0.95rem; color: var(--text-secondary); margin-top: 2px;">
+                                                            <%= card.expiry_date %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% if (card.status === 'active' && card.balance < card.original_amount && card.balance > 0) { %>
+                                                <div style="margin-top: 10px; background: rgba(255,255,255,0.05); border-radius: var(--radius-sm); height: 4px; overflow: hidden;">
+                                                    <div style="height: 100%; background: var(--color-gold); border-radius: var(--radius-sm); width: <%= (card.balance / card.original_amount * 100) %>%;"></div>
+                                                </div>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                                <% } else { %>
+                                <div style="text-align: center; padding: var(--spacing-2xl); color: var(--color-light-gray);">
+                                    <div style="font-size: 3rem; margin-bottom: var(--spacing-md);">🎁</div>
+                                    <p style="font-size: 1.1rem; margin-bottom: var(--spacing-sm);">No gift cards yet</p>
+                                    <p style="font-size: 0.85rem; opacity: 0.7;">Add a gift card below to get started.</p>
+                                </div>
+                                <% } %>
+
+                                <!-- Add Gift Card Form -->
+                                <div
+                                    style="background: var(--color-gray); padding: var(--spacing-xl); border-radius: var(--radius-lg); border: 1px solid var(--glass-border); margin-top: var(--spacing-lg);">
+                                    <h4 style="margin-bottom: var(--spacing-lg);">Redeem a Gift Card</h4>
+                                    <form
+                                        style="display: flex; gap: var(--spacing-md); flex-wrap: wrap; align-items: flex-end;">
+                                        <div style="flex: 1; min-width: 250px;">
+                                            <input type="text" placeholder="Enter gift card code (e.g. LUXE-GC-XX-XXXX-XXXX)"
+                                                class="form-input">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary" style="height: 48px; background: var(--color-gold); color: var(--color-black); border: none; font-weight: 600;">Redeem</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

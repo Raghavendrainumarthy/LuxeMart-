@@ -1,0 +1,705 @@
+<%- include('layouts/main', { title: title }) %>
+
+    <div style="padding-top: 120px; min-height: 100vh;">
+        <div class="container">
+            <h1 style="margin-bottom: var(--spacing-2xl);">Checkout</h1>
+
+            <!-- Payment Processing Overlay -->
+            <div id="processingOverlay"
+                style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,15,20,0.98); z-index: 99999; align-items: center; justify-content: center;">
+                <div style="text-align: center; max-width: 400px; padding: var(--spacing-2xl);">
+                    <div id="processingSpinner" style="margin-bottom: var(--spacing-xl);">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)"
+                            stroke-width="2" style="animation: spin 1s linear infinite;">
+                            <circle cx="12" cy="12" r="10" stroke-opacity="0.25" />
+                            <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <div id="processingIcon" style="display: none; margin-bottom: var(--spacing-xl);">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                            <polyline points="22,4 12,14.01 9,11.01" />
+                        </svg>
+                    </div>
+                    <h2 id="processingTitle"
+                        style="font-size: 1.5rem; margin-bottom: var(--spacing-sm); color: var(--color-gold);"></h2>
+                    <p id="processingDetail" class="text-muted" style="margin-bottom: var(--spacing-xl);"></p>
+
+                    <div id="processingSteps"
+                        style="text-align: left; background: rgba(255,255,255,0.03); border-radius: var(--radius-lg); padding: var(--spacing-lg);">
+                        <div class="step" id="step1"
+                            style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-sm) 0; opacity: 0.3;">
+                            <span class="step-icon">○</span>
+                            <span>Validating payment details...</span>
+                        </div>
+                        <div class="step" id="step2"
+                            style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-sm) 0; opacity: 0.3;">
+                            <span class="step-icon">○</span>
+                            <span>Processing payment...</span>
+                        </div>
+                        <div class="step" id="step3"
+                            style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-sm) 0; opacity: 0.3;">
+                            <span class="step-icon">○</span>
+                            <span>Confirming transaction...</span>
+                        </div>
+                        <div class="step" id="step4"
+                            style="display: flex; align-items: center; gap: var(--spacing-md); padding: var(--spacing-sm) 0; opacity: 0.3;">
+                            <span class="step-icon">○</span>
+                            <span>Creating your order...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: var(--spacing-2xl);">
+                <div>
+                    <form id="checkoutForm" data-no-loader>
+                        <!-- Shipping Info -->
+                        <div class="card" style="margin-bottom: var(--spacing-xl);">
+                            <div class="card-header">
+                                <h3>Shipping Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" name="full_name" id="full_name" class="form-input"
+                                        value="<%= user.full_name || '' %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" name="email" id="email" class="form-input"
+                                        value="<%= user.email || '' %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Shipping Address</label>
+                                    <textarea name="shipping_address" id="shipping_address" class="form-input" rows="3"
+                                        required><%= user.address || '' %></textarea>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                                    <div class="form-group">
+                                        <label class="form-label">Phone</label>
+                                        <input type="tel" name="phone" id="phone" class="form-input"
+                                            value="<%= user.phone || '' %>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Shipping Zone</label>
+                                        <select name="shipping_zone" id="shipping_zone" class="form-input"
+                                            onchange="updateShipping()" required>
+                                            <option value="local" data-charge="5">🏠 Local (0-50 km) - $5</option>
+                                            <option value="nearby" data-charge="15">🚗 Nearby States (50-300 km) - $15
+                                            </option>
+                                            <option value="national" data-charge="35" selected>✈️ Across Country
+                                                (300-1500 km) - $35</option>
+                                            <option value="international" data-charge="75">🌍 International (1500+ km) -
+                                                $75</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Shipping estimate display -->
+                                <div id="shippingEstimate"
+                                    style="background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: var(--radius-md); padding: var(--spacing-md); margin-top: var(--spacing-sm);">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <span style="font-size: 0.9rem;">📦 Estimated Delivery</span>
+                                            <p id="deliveryTime" class="text-muted"
+                                                style="font-size: 0.85rem; margin-top: 4px;">3-5 business days</p>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <span style="font-size: 0.9rem;">Shipping Cost</span>
+                                            <p id="shippingCostDisplay"
+                                                style="color: var(--color-gold); font-weight: 600; margin-top: 4px;">
+                                                $35.00</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Method Selection -->
+                        <div class="card" style="margin-bottom: var(--spacing-xl);">
+                            <div class="card-header">
+                                <h3>Payment Method</h3>
+                            </div>
+                            <div class="card-body">
+                                <!-- Payment Method Tabs -->
+                                <div style="display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg);">
+                                    <label class="payment-tab active" id="tab-card"
+                                        onclick="selectPaymentMethod('card')">
+                                        <input type="radio" name="payment_method" value="card" checked
+                                            style="display: none;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                                            <line x1="1" y1="10" x2="23" y2="10" />
+                                        </svg>
+                                        <span>Card</span>
+                                    </label>
+                                    <label class="payment-tab" id="tab-upi" onclick="selectPaymentMethod('upi')">
+                                        <input type="radio" name="payment_method" value="upi" style="display: none;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                                            <path
+                                                d="M7 7h.01M7 12h.01M7 17h.01M12 7h.01M12 12h.01M12 17h.01M17 7h.01M17 12h.01M17 17h.01" />
+                                        </svg>
+                                        <span>UPI</span>
+                                    </label>
+                                    <label class="payment-tab" id="tab-cod" onclick="selectPaymentMethod('cod')">
+                                        <input type="radio" name="payment_method" value="cod" style="display: none;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <path d="M12 6v6l4 2" />
+                                        </svg>
+                                        <span>Cash on Delivery</span>
+                                    </label>
+                                </div>
+
+                                <!-- Card Payment Form -->
+                                <div id="payment-card" class="payment-content">
+                                    <div class="form-group">
+                                        <label class="form-label">Card Number</label>
+                                        <input type="text" name="card_number" id="card_number" class="form-input"
+                                            placeholder="1234 5678 9012 3456" maxlength="19">
+                                    </div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                                        <div class="form-group">
+                                            <label class="form-label">Expiry Date</label>
+                                            <input type="text" name="card_expiry" id="card_expiry" class="form-input"
+                                                placeholder="MM/YY" maxlength="5">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">CVV</label>
+                                            <input type="text" name="card_cvv" id="card_cvv" class="form-input"
+                                                placeholder="123" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- UPI Payment Form -->
+                                <div id="payment-upi" class="payment-content" style="display: none;">
+                                    <div style="text-align: center; padding: var(--spacing-lg);">
+                                        <p style="margin-bottom: var(--spacing-md); color: var(--color-gold);">Scan QR
+                                            Code to Pay</p>
+                                        <div id="upi-qr-code"
+                                            style="background: white; padding: 20px; border-radius: var(--radius-lg); display: inline-block; margin-bottom: var(--spacing-md);">
+                                            <!-- QR Code will be generated here -->
+                                        </div>
+                                        <p style="font-size: 0.9rem; margin-bottom: var(--spacing-md);">
+                                            UPI ID: <strong style="color: var(--color-gold);">luxemart@upi</strong>
+                                        </p>
+                                        <p style="font-size: 0.85rem; color: var(--color-text-muted);">
+                                            Amount: <strong>$<%= (total + (total>= 500 ? 0 : 25) + (total *
+                                                    0.08)).toFixed(2) %></strong>
+                                        </p>
+                                        <div class="form-group"
+                                            style="margin-top: var(--spacing-lg); text-align: left;">
+                                            <label class="form-label">UPI Transaction ID</label>
+                                            <input type="text" name="upi_transaction_id" id="upi_transaction_id"
+                                                class="form-input" placeholder="Enter 12-digit UPI Transaction ID">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cash on Delivery -->
+                                <div id="payment-cod" class="payment-content" style="display: none;">
+                                    <div style="text-align: center; padding: var(--spacing-xl);">
+                                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none"
+                                            stroke="var(--color-gold)" stroke-width="1.5"
+                                            style="margin-bottom: var(--spacing-md);">
+                                            <rect x="2" y="6" width="20" height="12" rx="2" />
+                                            <circle cx="12" cy="12" r="3" />
+                                            <path d="M6 12h.01M18 12h.01" />
+                                        </svg>
+                                        <h4 style="color: var(--color-gold); margin-bottom: var(--spacing-sm);">Cash on
+                                            Delivery</h4>
+                                        <p class="text-muted" style="margin-bottom: var(--spacing-md);">
+                                            Pay with cash when your order is delivered
+                                        </p>
+                                        <div
+                                            style="background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: var(--radius-md); padding: var(--spacing-md);">
+                                            <p style="font-size: 0.9rem;">
+                                                ✓ No advance payment required<br>
+                                                ✓ Pay when you receive your order<br>
+                                                ✓ Inspect before paying
+                                            </p>
+                                        </div>
+                                        <p
+                                            style="margin-top: var(--spacing-md); font-size: 0.85rem; color: var(--color-text-muted);">
+                                            <strong>Amount to pay:</strong> <span id="codAmount">$<%= (total + 35 +
+                                                    (total * 0.08)).toFixed(2) %></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="selected_payment" id="selected_payment" value="card">
+                        <input type="hidden" name="shipping_cost" id="shipping_cost" value="35">
+
+                        <button type="submit" class="btn btn-primary btn-lg" id="placeOrderBtn" style="width: 100%;">
+                            Place Order - $<%= (total + 35 + (total * 0.08)).toFixed(2) %>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Order Summary -->
+                <div>
+                    <div class="cart-summary">
+                        <h3 style="margin-bottom: var(--spacing-lg);">Order Summary</h3>
+
+                        <div style="max-height: 300px; overflow-y: auto; margin-bottom: var(--spacing-lg);">
+                            <% cartItems.forEach(function(item) { %>
+                                <div
+                                    style="display: flex; gap: var(--spacing-md); margin-bottom: var(--spacing-md); padding-bottom: var(--spacing-md); border-bottom: 1px solid rgba(255,255,255,0.05);">
+                                    <div
+                                        style="width: 60px; height: 60px; border-radius: var(--radius-sm); overflow: hidden; background: var(--color-gray);">
+                                        <img src="<%= item.image %>" alt="<%= item.name %>"
+                                            style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <p style="font-weight: 500;">
+                                            <%= item.name %>
+                                        </p>
+                                        <p class="text-muted" style="font-size: 0.85rem;">Qty: <%= item.quantity %>
+                                        </p>
+                                    </div>
+                                    <p style="color: var(--color-gold);">$<%= item.subtotal.toLocaleString() %>
+                                    </p>
+                                </div>
+                                <% }); %>
+                        </div>
+
+                        <div class="cart-summary-row">
+                            <span>Subtotal</span>
+                            <span>$<%= total.toLocaleString() %></span>
+                        </div>
+                        <div class="cart-summary-row">
+                            <span>Shipping</span>
+                            <span id="summaryShipping">$35.00</span>
+                        </div>
+                        <div class="cart-summary-row">
+                            <span>Tax (8%)</span>
+                            <span>$<%= (total * 0.08).toFixed(2) %></span>
+                        </div>
+                        <div class="cart-summary-row total">
+                            <span>Total</span>
+                            <span id="summaryTotal">$<%= (total + 35 + (total * 0.08)).toFixed(2) %></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .step.active {
+            opacity: 1 !important;
+            color: var(--color-gold);
+        }
+
+        .step.complete {
+            opacity: 1 !important;
+            color: #10b981;
+        }
+
+        .step.complete .step-icon {
+            color: #10b981;
+        }
+
+        /* Payment Method Tabs */
+        .payment-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--color-text-muted);
+        }
+
+        .payment-tab:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .payment-tab.active {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--color-gold);
+            color: var(--color-gold);
+        }
+
+        .payment-tab svg {
+            transition: transform 0.3s ease;
+        }
+
+        .payment-tab:hover svg {
+            transform: scale(1.1);
+        }
+
+        .payment-tab span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .payment-content {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <script>
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+        let currentPaymentMethod = 'card';
+        let currentShippingCost = 35; // Default national shipping
+        const subtotal = <%= total %>;
+        const taxRate = 0.08;
+
+        // Shipping zone configuration
+        const shippingZones = {
+            local: { cost: 5, days: '1-2 business days', icon: '🏠' },
+            nearby: { cost: 15, days: '2-4 business days', icon: '🚗' },
+            national: { cost: 35, days: '3-5 business days', icon: '✈️' },
+            international: { cost: 75, days: '7-14 business days', icon: '🌍' }
+        };
+
+        // Update shipping costs dynamically
+        function updateShipping() {
+            const zoneSelect = document.getElementById('shipping_zone');
+            const selectedZone = zoneSelect.value;
+            const zoneInfo = shippingZones[selectedZone];
+
+            currentShippingCost = zoneInfo.cost;
+
+            // Update shipping display
+            document.getElementById('shippingCostDisplay').textContent = '$' + currentShippingCost.toFixed(2);
+            document.getElementById('deliveryTime').textContent = zoneInfo.days;
+
+            // Update order summary
+            updateOrderTotal();
+        }
+
+        function updateOrderTotal() {
+            const tax = subtotal * taxRate;
+            const total = subtotal + currentShippingCost + tax;
+
+            // Update shipping row in summary
+            const shippingSpan = document.getElementById('summaryShipping');
+            if (shippingSpan) {
+                shippingSpan.textContent = '$' + currentShippingCost.toFixed(2);
+            }
+
+            // Update total
+            const totalSpan = document.getElementById('summaryTotal');
+            if (totalSpan) {
+                totalSpan.textContent = '$' + total.toFixed(2);
+            }
+
+            // Update button
+            const btn = document.getElementById('placeOrderBtn');
+            if (btn) {
+                btn.textContent = 'Place Order - $' + total.toFixed(2);
+            }
+
+            // Update COD amount display
+            const codAmount = document.getElementById('codAmount');
+            if (codAmount) {
+                codAmount.textContent = '$' + total.toFixed(2);
+            }
+
+            // Update hidden shipping cost field
+            const shippingCostField = document.getElementById('shipping_cost');
+            if (shippingCostField) {
+                shippingCostField.value = currentShippingCost;
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateShipping();
+        });
+
+        // Payment method switching
+        function selectPaymentMethod(method) {
+            currentPaymentMethod = method;
+            document.getElementById('selected_payment').value = method;
+
+            // Update tabs
+            document.querySelectorAll('.payment-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById('tab-' + method).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.payment-content').forEach(content => content.style.display = 'none');
+            document.getElementById('payment-' + method).style.display = 'block';
+
+            // Generate QR code if UPI selected
+            if (method === 'upi') {
+                generateUPIQRCode();
+            }
+        }
+
+        // Generate unique UPI QR code
+        function generateUPIQRCode() {
+            const amount = <%= (total + (total >= 500 ? 0 : 25) + (total * 0.08)).toFixed(2) %>;
+            const orderId = 'LUX-' + Date.now();
+            const upiString = `upi://pay?pa=luxemart@upi&pn=LuxeMart&am=${amount}&tr=${orderId}&cu=USD`;
+
+            // Create QR code using a library-free canvas approach
+            const qrContainer = document.getElementById('upi-qr-code');
+            qrContainer.innerHTML = '';
+
+            // Create canvas for QR code
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+
+            // Generate a unique pattern based on order ID
+            const seed = orderId.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+            const pattern = generateQRPattern(25, seed);
+
+            const cellSize = 8;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, 200, 200);
+            ctx.fillStyle = 'black';
+
+            // Draw QR-like pattern
+            for (let y = 0; y < 25; y++) {
+                for (let x = 0; x < 25; x++) {
+                    if (pattern[y][x]) {
+                        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+
+            // Add positioning squares
+            drawPositionSquare(ctx, 0, 0, cellSize);
+            drawPositionSquare(ctx, 18 * cellSize, 0, cellSize);
+            drawPositionSquare(ctx, 0, 18 * cellSize, cellSize);
+
+            qrContainer.appendChild(canvas);
+
+            // Add order reference below QR
+            const refDiv = document.createElement('div');
+            refDiv.style.cssText = 'margin-top: 10px; font-size: 12px; color: #666;';
+            refDiv.textContent = 'Ref: ' + orderId;
+            qrContainer.appendChild(refDiv);
+        }
+
+        function generateQRPattern(size, seed) {
+            const pattern = [];
+            let s = seed;
+            for (let y = 0; y < size; y++) {
+                pattern[y] = [];
+                for (let x = 0; x < size; x++) {
+                    // Skip position squares areas
+                    if ((x < 8 && y < 8) || (x < 8 && y > 16) || (x > 16 && y < 8)) {
+                        pattern[y][x] = false;
+                    } else {
+                        s = (s * 1103515245 + 12345) & 0x7fffffff;
+                        pattern[y][x] = (s % 100) < 45;
+                    }
+                }
+            }
+            return pattern;
+        }
+
+        function drawPositionSquare(ctx, x, y, cellSize) {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(x, y, 7 * cellSize, 7 * cellSize);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x + cellSize, y + cellSize, 5 * cellSize, 5 * cellSize);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(x + 2 * cellSize, y + 2 * cellSize, 3 * cellSize, 3 * cellSize);
+        }
+
+        // Validate card fields - only numbers allowed
+        function validateCardFields() {
+            const cardNumber = document.getElementById('card_number').value.replace(/\s/g, '');
+            const cardExpiry = document.getElementById('card_expiry').value.replace(/\//g, '');
+            const cardCvv = document.getElementById('card_cvv').value;
+
+            // Check for alphabets in card number
+            if (/[a-zA-Z]/.test(cardNumber)) {
+                return { valid: false, message: 'Card number should only contain numbers' };
+            }
+            // Check for alphabets in expiry
+            if (/[a-zA-Z]/.test(cardExpiry)) {
+                return { valid: false, message: 'Expiry date should only contain numbers' };
+            }
+            // Check for alphabets in CVV
+            if (/[a-zA-Z]/.test(cardCvv)) {
+                return { valid: false, message: 'CVV should only contain numbers' };
+            }
+            // Check card number length (should be 13-19 digits)
+            if (cardNumber.length < 13 || cardNumber.length > 19) {
+                return { valid: false, message: 'Please enter a valid card number' };
+            }
+            return { valid: true };
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Validate based on payment method
+            let validation = { valid: true };
+            if (currentPaymentMethod === 'card') {
+                validation = validateCardFields();
+            } else if (currentPaymentMethod === 'upi') {
+                const transactionId = document.getElementById('upi_transaction_id').value.trim();
+                if (!transactionId || transactionId.length < 8) {
+                    validation = { valid: false, message: 'Please enter a valid UPI Transaction ID' };
+                }
+            }
+            // COD doesn't need validation
+
+            if (!validation.valid) {
+                const overlay = document.getElementById('processingOverlay');
+                const title = document.getElementById('processingTitle');
+                const detail = document.getElementById('processingDetail');
+                const spinner = document.getElementById('processingSpinner');
+
+                overlay.style.display = 'flex';
+
+                // Show validating step
+                document.getElementById('step1').classList.add('active');
+                document.getElementById('step1').querySelector('.step-icon').textContent = '●';
+                title.textContent = '🔒 Validating Payment Details';
+                detail.textContent = 'Checking card information...';
+                await sleep(1500);
+
+                // Show error
+                document.getElementById('step1').classList.remove('active');
+                document.getElementById('step1').style.color = '#ef4444';
+                document.getElementById('step1').style.opacity = '1';
+                document.getElementById('step1').querySelector('.step-icon').textContent = '✕';
+                spinner.innerHTML = `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M15 9l-6 6M9 9l6 6"/>
+                </svg>`;
+                title.textContent = '❌ Invalid Card Details';
+                title.style.color = '#ef4444';
+                detail.textContent = validation.message;
+
+                await sleep(2500);
+
+                // Reset and hide overlay
+                overlay.style.display = 'none';
+                document.getElementById('step1').style.color = '';
+                document.getElementById('step1').style.opacity = '';
+                document.getElementById('step1').querySelector('.step-icon').textContent = '○';
+                title.style.color = '';
+                spinner.innerHTML = `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--color-gold)" stroke-width="2" style="animation: spin 1s linear infinite;">
+                    <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+                </svg>`;
+
+                // Focus on the card number field
+                document.getElementById('card_number').focus();
+                return;
+            }
+
+            const overlay = document.getElementById('processingOverlay');
+            const title = document.getElementById('processingTitle');
+            const detail = document.getElementById('processingDetail');
+            const spinner = document.getElementById('processingSpinner');
+            const successIcon = document.getElementById('processingIcon');
+
+            overlay.style.display = 'flex';
+
+            // Step 1: Validating
+            document.getElementById('step1').classList.add('active');
+            document.getElementById('step1').querySelector('.step-icon').textContent = '●';
+            title.textContent = '🔒 Validating Payment Details';
+            detail.textContent = 'Checking card information...';
+            await sleep(1200);
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step1').classList.add('complete');
+            document.getElementById('step1').querySelector('.step-icon').textContent = '✓';
+
+            // Step 2: Processing Payment
+            document.getElementById('step2').classList.add('active');
+            document.getElementById('step2').querySelector('.step-icon').textContent = '●';
+            title.textContent = '💳 Processing Payment';
+            detail.textContent = 'Connecting to payment gateway...';
+            await sleep(1500);
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step2').classList.add('complete');
+            document.getElementById('step2').querySelector('.step-icon').textContent = '✓';
+
+            // Step 3: Confirming Transaction
+            document.getElementById('step3').classList.add('active');
+            document.getElementById('step3').querySelector('.step-icon').textContent = '●';
+            title.textContent = '✅ Confirming Transaction';
+            detail.textContent = 'Verifying with your bank...';
+            await sleep(1300);
+            document.getElementById('step3').classList.remove('active');
+            document.getElementById('step3').classList.add('complete');
+            document.getElementById('step3').querySelector('.step-icon').textContent = '✓';
+
+            // Step 4: Creating Order
+            document.getElementById('step4').classList.add('active');
+            document.getElementById('step4').querySelector('.step-icon').textContent = '●';
+            title.textContent = '📦 Creating Your Order';
+            detail.textContent = 'Generating tracking number...';
+
+            // Actually submit the order
+            const formData = new FormData(this);
+            try {
+                const response = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(formData))
+                });
+                const data = await response.json();
+
+                await sleep(800);
+                document.getElementById('step4').classList.remove('active');
+                document.getElementById('step4').classList.add('complete');
+                document.getElementById('step4').querySelector('.step-icon').textContent = '✓';
+
+                // Success!
+                spinner.style.display = 'none';
+                successIcon.style.display = 'block';
+                title.textContent = '🎉 Order Placed Successfully!';
+                title.style.color = '#10b981';
+                detail.textContent = 'Tracking: ' + data.trackingNumber;
+
+                await sleep(2000);
+                window.location.href = '/orders';
+            } catch (err) {
+                title.textContent = '❌ Payment Failed';
+                detail.textContent = 'Please try again.';
+                await sleep(2000);
+                overlay.style.display = 'none';
+            }
+        });
+    </script>
+
+    <%- include('partials/footer') %>

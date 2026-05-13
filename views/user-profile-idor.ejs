@@ -1,0 +1,410 @@
+<%- include('layouts/main', { title: title }) %>
+
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 12, 0.98);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        #loading-overlay.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 2px solid rgba(201, 169, 98, 0.1);
+            border-top: 2px solid var(--color-gold);
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            margin-bottom: 24px;
+            box-shadow: 0 0 20px rgba(201, 169, 98, 0.1);
+        }
+
+        .loading-text {
+            color: var(--color-gold);
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .content-hidden {
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .content-visible {
+            opacity: 1;
+            animation: fadeIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+    </style>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">LOADING...</div>
+    </div>
+
+    <div id="profile-content" class="content-hidden"
+        style="padding-top: 120px; padding-bottom: var(--spacing-4xl); min-height: 100vh;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 300px 1fr; gap: var(--spacing-2xl);">
+                <!-- Sidebar -->
+                <%- include('partials/profile-sidebar', { activePage: 'profile' }) %>
+
+                    <!-- Main Content -->
+                    <div>
+                        <div class="card" style="margin-bottom: var(--spacing-xl);">
+                            <div class="card-header"
+                                style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3>Profile Information</h3>
+                                <% if (isOwnProfile) { %>
+                                <button id="edit-profile-btn" onclick="toggleEditProfile()" class="btn btn-sm btn-secondary" style="display: flex; align-items: center; gap: 6px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                                    Edit
+                                </button>
+                                <% } %>
+                            </div>
+                            <div class="card-body">
+                                <!-- Read-only view -->
+                                <div id="profile-view">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                                        <div class="form-group">
+                                            <label class="form-label">Username</label>
+                                            <div style="padding: 12px 16px; background: var(--bg-tertiary); border-radius: var(--radius-md); color: var(--text-primary);">
+                                                <%= targetUser.username || 'Not provided' %>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Full Name</label>
+                                            <div style="padding: 12px 16px; background: var(--bg-tertiary); border-radius: var(--radius-md); color: var(--text-primary);">
+                                                <%= targetUser.full_name || 'Not provided' %>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Email</label>
+                                            <div style="padding: 12px 16px; background: var(--bg-tertiary); border-radius: var(--radius-md); color: var(--text-primary);">
+                                                <%= targetUser.email || 'Not provided' %>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Phone</label>
+                                            <div style="padding: 12px 16px; background: var(--bg-tertiary); border-radius: var(--radius-md); color: var(--text-primary);">
+                                                <%= targetUser.phone || 'Not provided' %>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Address</label>
+                                            <div style="padding: 12px 16px; background: var(--bg-tertiary); border-radius: var(--radius-md); color: var(--text-primary);">
+                                                <%= targetUser.address || 'Not provided' %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Edit form (hidden by default) -->
+                                <% if (isOwnProfile) { %>
+                                <form id="profile-edit-form" action="/profile/update" method="POST" style="display: none;">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                                        <div class="form-group">
+                                            <label class="form-label">Username</label>
+                                            <input type="text" name="username" class="form-control" value="<%= targetUser.username || '' %>" placeholder="Enter username"
+                                                style="padding: 12px 16px; background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); width: 100%; font-size: 0.95rem;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Full Name</label>
+                                            <input type="text" name="full_name" class="form-control" value="<%= targetUser.full_name || '' %>" placeholder="Enter full name"
+                                                style="padding: 12px 16px; background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); width: 100%; font-size: 0.95rem;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" name="email" class="form-control" value="<%= targetUser.email || '' %>" placeholder="Enter email"
+                                                style="padding: 12px 16px; background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); width: 100%; font-size: 0.95rem;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Phone</label>
+                                            <input type="text" name="phone" class="form-control" value="<%= targetUser.phone || '' %>" placeholder="Enter phone number"
+                                                style="padding: 12px 16px; background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); width: 100%; font-size: 0.95rem;">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Address</label>
+                                            <input type="text" name="address" class="form-control" value="<%= targetUser.address || '' %>" placeholder="Enter address"
+                                                style="padding: 12px 16px; background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); width: 100%; font-size: 0.95rem;">
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg); justify-content: flex-end;">
+                                        <button type="button" onclick="toggleEditProfile()" class="btn btn-sm btn-secondary">Cancel</button>
+                                        <button type="submit" class="btn btn-sm btn-primary" style="background: var(--color-gold); color: var(--color-black); border: none; font-weight: 600;">Save Changes</button>
+                                    </div>
+                                </form>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Saved Cards Section -->
+                        <div class="card" style="margin-bottom: var(--spacing-xl);">
+                            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                                <h4 style="display: flex; align-items: center; gap: var(--spacing-sm); margin: 0;">
+                                    💳 Saved Payment Methods
+                                </h4>
+                                <% if (isOwnProfile) { %>
+                                <button onclick="document.getElementById('add-card-form').style.display = document.getElementById('add-card-form').style.display === 'none' ? 'block' : 'none'" class="btn btn-sm btn-secondary" style="display: flex; align-items: center; gap: 6px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    Add Card
+                                </button>
+                                <% } %>
+                            </div>
+                            <div class="card-body">
+                                <!-- Add Card Form (hidden by default) -->
+                                <% if (isOwnProfile) { %>
+                                <div id="add-card-form" style="display: none; margin-bottom: var(--spacing-xl); padding: var(--spacing-lg); background: var(--bg-tertiary); border-radius: var(--radius-lg); border: 1px solid var(--glass-border);">
+                                    <h5 style="margin-bottom: var(--spacing-md); color: var(--color-gold);">Add New Card</h5>
+                                    <form action="/profile/cards/add" method="POST">
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                                            <div class="form-group" style="grid-column: span 2;">
+                                                <label class="form-label">Card Number</label>
+                                                <input type="text" name="card_number" required placeholder="1234-5678-9012-3456" maxlength="19"
+                                                    style="padding: 12px 16px; background: var(--color-dark-gray); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); width: 100%; font-size: 0.95rem; font-family: 'OCR A Extended', 'Courier New', monospace; letter-spacing: 2px;">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Card Type</label>
+                                                <select name="card_type" required
+                                                    style="padding: 12px 16px; background: var(--color-dark-gray); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); width: 100%; font-size: 0.95rem; appearance: auto;">
+                                                    <option value="Visa">Visa</option>
+                                                    <option value="Mastercard">Mastercard</option>
+                                                    <option value="Amex">American Express</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Expiry Date</label>
+                                                <input type="text" name="expiry_date" required placeholder="MM/YY" maxlength="5"
+                                                    style="padding: 12px 16px; background: var(--color-dark-gray); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); width: 100%; font-size: 0.95rem;">
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">CVV</label>
+                                                <input type="text" name="cvv" required placeholder="123" maxlength="4"
+                                                    style="padding: 12px 16px; background: var(--color-dark-gray); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary); width: 100%; font-size: 0.95rem;">
+                                            </div>
+                                            <div class="form-group">
+                                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-secondary); font-size: 0.9rem;">
+                                                    <input type="checkbox" name="is_default" value="1" style="accent-color: var(--color-gold);">
+                                                    Set as default card
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg); justify-content: flex-end;">
+                                            <button type="button" onclick="document.getElementById('add-card-form').style.display='none'" class="btn btn-sm btn-secondary">Cancel</button>
+                                            <button type="submit" class="btn btn-sm btn-primary" style="background: var(--color-gold); color: var(--color-black); border: none; font-weight: 600;">Add Card</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <% } %>
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--spacing-lg);">
+                                    <% if (creditCards && creditCards.length> 0) { %>
+                                        <% creditCards.forEach(function(card, index) { var cardGradient,
+                                            cardBgPattern; if (card.card_type==='Visa' ) {
+                                            cardGradient='linear-gradient(135deg, #1a1f71 0%, #00579f 100%)' ;
+                                            cardBgPattern='radial-gradient(ellipse at top right, rgba(255,255,255,0.15) 0%, transparent 50%)'
+                                            ; } else if (card.card_type==='Mastercard' ) {
+                                            cardGradient='linear-gradient(135deg, #252525 0%, #1a1a1a 100%)' ;
+                                            cardBgPattern='radial-gradient(ellipse at bottom left, rgba(255,255,255,0.08) 0%, transparent 50%)'
+                                            ; } else {
+                                            cardGradient='linear-gradient(135deg, #006fcf 0%, #003087 100%)' ;
+                                            cardBgPattern='radial-gradient(ellipse at top right, rgba(255,255,255,0.12) 0%, transparent 50%)'
+                                            ; } %>
+                                            <div style="position: relative;">
+                                                <div class="credit-card"
+                                                    style="background: <%= cardGradient %>; padding: 28px; border-radius: 14px; color: white; position: relative; min-height: 210px; box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 5px 15px rgba(0,0,0,0.2); overflow: hidden; font-family: 'Arial', sans-serif; aspect-ratio: 1.586;">
+                                                    <div
+                                                        style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: <%= cardBgPattern %>; pointer-events: none;">
+                                                    </div>
+
+                                                    <% if (card.is_default) { %>
+                                                        <div
+                                                            style="position: absolute; top: 12px; left: 12px; background: rgba(255,215,0,0.9); color: #1a1a1a; font-size: 0.6rem; padding: 3px 8px; border-radius: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                            Primary</div>
+                                                    <% } %>
+
+                                                    <div style="position: absolute; top: 20px; right: 24px;">
+                                                        <% if (card.card_type==='Visa' ) { %>
+                                                            <div style="font-size: 1.6rem; font-weight: 700; font-style: italic; letter-spacing: -1px;">VISA</div>
+                                                        <% } else if (card.card_type==='Mastercard' ) { %>
+                                                            <div style="display: flex; align-items: center;">
+                                                                <div style="width: 36px; height: 36px; background: #eb001b; border-radius: 50%;"></div>
+                                                                <div style="width: 36px; height: 36px; background: #f79e1b; border-radius: 50%; margin-left: -14px; opacity: 0.9;"></div>
+                                                            </div>
+                                                        <% } else { %>
+                                                            <div style="font-size: 1.6rem; font-weight: 700; font-style: italic; letter-spacing: -1px;">AMEX</div>
+                                                        <% } %>
+                                                    </div>
+
+                                                    <div style="margin-top: 25px; margin-bottom: 25px;">
+                                                        <div style="width: 55px; height: 42px; background: linear-gradient(145deg, #d4af37, #f4d03f, #c9a227); border-radius: 8px; position: relative; box-shadow: inset 0 1px 3px rgba(255,255,255,0.4), 0 2px 4px rgba(0,0,0,0.3);">
+                                                            <div style="position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px; border: 1px solid rgba(0,0,0,0.15); border-radius: 4px;"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div style="font-size: 1.5rem; letter-spacing: 3px; font-family: 'OCR A Extended', 'Courier New', monospace; margin-bottom: 25px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                                        <%= card.card_number %>
+                                                    </div>
+
+                                                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                                        <div>
+                                                            <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 4px;">Card Holder</div>
+                                                            <div style="font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 2px;">
+                                                                <%= targetUser.full_name || targetUser.username %>
+                                                            </div>
+                                                        </div>
+                                                        <div style="text-align: right;">
+                                                            <div style="font-size: 0.55rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 4px;">Valid Thru</div>
+                                                            <div style="font-size: 0.9rem; font-weight: 500; letter-spacing: 1px;">
+                                                                <%= card.expiry_date %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Delete button -->
+                                                <% if (isOwnProfile) { %>
+                                                <form action="/profile/cards/delete" method="POST" style="position: absolute; top: -8px; right: -8px; z-index: 10;" onsubmit="return confirm('Remove this card?')">
+                                                    <input type="hidden" name="card_id" value="<%= card.id %>">
+                                                    <button type="submit" style="width: 28px; height: 28px; border-radius: 50%; background: var(--color-error); color: white; border: 2px solid var(--color-dark-gray); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; box-shadow: 0 2px 8px rgba(0,0,0,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">✕</button>
+                                                </form>
+                                                <% } %>
+                                            </div>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <p class="text-muted">No saved cards.</p>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Orders -->
+                        <div class="card" style="margin-top: var(--spacing-xl);">
+                            <div class="card-header">
+                                <h3>Recent Orders</h3>
+                            </div>
+                            <div class="card-body">
+                                <% if (orders.length> 0) { %>
+                                    <div class="table-container">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Order ID</th>
+                                                    <th>Date</th>
+                                                    <th>Total</th>
+                                                    <th>Status</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% orders.forEach(function(order) { %>
+                                                    <tr>
+                                                        <td>#<%= order.id %>
+                                                        </td>
+                                                        <td>
+                                                            <%= new Date(order.created_at).toLocaleDateString() %>
+                                                        </td>
+                                                        <td>$<%= order.total.toLocaleString() %>
+                                                        </td>
+                                                        <td>
+                                                            <span class="order-status status-<%= order.status %>">
+                                                                <%= order.status %>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <a href="/orders/<%= order.id %>"
+                                                                class="btn btn-sm btn-secondary">View</a>
+                                                        </td>
+                                                    </tr>
+                                                    <% }); %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <% } else { %>
+                                        <p class="text-muted">No orders yet.</p>
+                                        <% } %>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleEditProfile() {
+            const view = document.getElementById('profile-view');
+            const form = document.getElementById('profile-edit-form');
+            const btn = document.getElementById('edit-profile-btn');
+            if (form.style.display === 'none') {
+                view.style.display = 'none';
+                form.style.display = 'block';
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Cancel';
+            } else {
+                view.style.display = 'block';
+                form.style.display = 'none';
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit';
+            }
+        }
+
+        window.addEventListener('load', () => {
+            const isOwn = <%= isOwnProfile %>;
+            const userId = <%= targetUser.id %>;
+            const overlay = document.getElementById('loading-overlay');
+            const content = document.getElementById('profile-content');
+
+            // Fetch user profile data via API — this request is visible in the Network tab
+            // VULNERABLE: Change the userId parameter in the URL to access other users' data
+            fetch(`/api/user/profile?userId=${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log('[LuxeMart] Profile data loaded for user ID:', userId, data);
+                })
+                .catch(() => {});
+
+            // Random delay between 800ms and 1500ms to simulate fetching
+            const delay = isOwn ? 0 : Math.floor(Math.random() * 700) + 800;
+
+            setTimeout(() => {
+                overlay.classList.add('hide');
+                content.classList.remove('content-hidden');
+                content.classList.add('content-visible');
+            }, delay);
+        });
+    </script>
+
+    <%- include('partials/footer') %>
