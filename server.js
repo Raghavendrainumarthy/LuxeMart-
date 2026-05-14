@@ -76,6 +76,7 @@ const orderRoutes = require('./routes/orders');
 const adminRoutes = require('./routes/admin');
 const apiRoutes = require('./routes/api');
 const wishlistRoutes = require('./routes/wishlist');
+const cacheRoutes = require('./routes/cache');
 
 // Middleware to fetch user's wishlist
 app.use((req, res, next) => {
@@ -92,6 +93,50 @@ app.use((req, res, next) => {
     }
 });
 
+// Cache control middleware (path-specific headers)
+app.use((req, res, next) => {
+    if (req.path.startsWith('/products')) {
+        res.set('Cache-Control', 'public, max-age=3600, s-maxage=3600');
+        res.set('X-Cache-Vulnerable', 'true');
+    }
+    next();
+});
+
+app.use((req, res, next) => {
+    if (req.path.startsWith('/search')) {
+        res.set('Cache-Control', 'public, max-age=600');
+        if (req.query.q !== undefined) {
+            res.set('X-Search-Query', String(req.query.q));
+        }
+    }
+    next();
+});
+
+app.use((req, res, next) => {
+    if (req.path.startsWith('/profile')) {
+        res.set('Cache-Control', 'public, max-age=300');
+    }
+    next();
+});
+
+app.use((req, res, next) => {
+    if (req.path.startsWith('/admin')) {
+        res.set('Cache-Control', 'public, max-age=600');
+    }
+    next();
+});
+
+app.use((req, res, next) => {
+    const p = req.path;
+    if (p.startsWith('/products') || p.startsWith('/search') || p.startsWith('/profile') || p.startsWith('/static') || p.startsWith('/api')) {
+        res.set('X-Cache-Status', 'CACHEABLE');
+    } else {
+        res.set('X-Cache-Status', 'BYPASS');
+    }
+    res.set('X-Served-By', 'LuxeMart-Cache/1.0');
+    next();
+});
+
 app.use('/', authRoutes);
 app.use('/products', productRoutes);
 app.use('/cart', cartRoutes);
@@ -99,6 +144,7 @@ app.use('/orders', orderRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api', apiRoutes);
 app.use('/wishlist', wishlistRoutes);
+app.use('/', cacheRoutes);
 
 // Home page
 app.get('/', (req, res) => {

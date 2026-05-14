@@ -85,6 +85,9 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     const productId = req.params.id;
 
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.setHeader('X-Product-Cache', 'HIT');
+
     db.get('SELECT * FROM products WHERE id = ?', [productId], (err, product) => {
         if (err || !product) {
             return res.status(404).render('error', {

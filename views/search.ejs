@@ -1,0 +1,106 @@
+<%- include('layouts/main', { title: typeof title !== 'undefined' ? title : 'Search - LuxeMart' }) %>
+
+    <div style="padding-top: 120px; padding-bottom: var(--spacing-4xl); min-height: 100vh;">
+        <div class="container">
+            <div class="card" style="margin-bottom: var(--spacing-xl);">
+                <div class="card-body">
+                    <!-- VULNERABLE: Reflected XSS — query rendered unescaped -->
+                    <h2 style="margin-bottom: var(--spacing-lg);">Search results for: <%- query %></h2>
+
+                    <!-- VULNERABLE: Web cache poisoning — host reflected unescaped into script context -->
+                    <script>var baseUrl = "<%- host %>";</script>
+
+                    <% if (!results || results.length === 0) { %>
+                        <!-- VULNERABLE: Reflected XSS in empty-state message -->
+                        <p class="text-muted" style="margin-bottom: var(--spacing-xl);">No results found for "<%- query %>"</p>
+
+                        <!-- VULNERABLE: Exposes path traversal endpoint via a "hidden" diagnostic panel (ONLY ON MISS) -->
+                        <div style="margin-top: var(--spacing-xl); border-top: 1px solid rgba(0,0,0,0.05); padding-top: var(--spacing-xl);">
+                            <button id="toggle-diagnostics" style="background: none; border: 1px dashed #ccc; color: #888; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: monospace; font-size: 0.75rem; transition: all 0.3s ease;">
+                                [+] Open System Diagnostics (Internal Use Only)
+                            </button>
+
+                            <div id="diagnostic-panel" style="display: none; margin-top: 20px; background: #1a1a1a; color: #00ff00; padding: 20px; border-radius: 8px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid #333; text-align: left;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                                    <span style="font-weight: bold; color: #ff3e3e;">⚠ DIAGNOSTIC MODE: ACTIVE</span>
+                                    <span style="color: #666;">v2.4.0-stable</span>
+                                </div>
+                                
+                                <p style="margin-bottom: 10px; color: #aaa; font-size: 0.85rem;">Authorized personnel only. Exporting system logs may contain sensitive metadata.</p>
+                                
+                                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                    <span style="color: #00ff00;">$ export_log --file=</span>
+                                    <input type="text" id="diag-filename" value="search_results.json" style="background: #000; border: 1px solid #00ff00; color: #00ff00; padding: 4px 8px; flex-grow: 1; outline: none; border-radius: 3px; font-family: monospace;">
+                                    <button id="run-export" style="background: #00ff00; color: #000; border: none; padding: 4px 12px; cursor: pointer; font-weight: bold; border-radius: 3px; transition: opacity 0.2s;">RUN</button>
+                                </div>
+                                
+                                <div id="diag-status" style="margin-top: 15px; font-size: 0.8rem; color: #666;">
+                                    Ready to initialize export...
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const toggleBtn = document.getElementById('toggle-diagnostics');
+                                const panel = document.getElementById('diagnostic-panel');
+                                const runBtn = document.getElementById('run-export');
+                                const fileInput = document.getElementById('diag-filename');
+                                const status = document.getElementById('diag-status');
+
+                                if (toggleBtn && panel) {
+                                    toggleBtn.addEventListener('click', () => {
+                                        const isHidden = panel.style.display === 'none';
+                                        panel.style.display = isHidden ? 'block' : 'none';
+                                        toggleBtn.innerText = isHidden ? '[-] Close System Diagnostics' : '[+] Open System Diagnostics (Internal Use Only)';
+                                    });
+                                }
+
+                                if (runBtn && fileInput) {
+                                    runBtn.addEventListener('click', () => {
+                                        const filename = fileInput.value;
+                                        status.innerText = `Requesting: /files?file=${filename}...`;
+                                        status.style.color = "#00ff00";
+                                        
+                                        setTimeout(() => {
+                                            window.location.href = `/files?file=` + encodeURIComponent(filename);
+                                        }, 800);
+                                    });
+                                }
+                            });
+                        </script>
+                    <% } else { %>
+                        <div class="products-grid" style="margin-top: var(--spacing-xl);">
+                            <% results.forEach(function(product) { %>
+                                <div class="product-card">
+                                    <a href="/products/<%= product.id %>">
+                                        <div class="product-image">
+                                            <img src="<%= product.image %>" alt="<%= product.name %>" loading="lazy"
+                                                 onerror="this.onerror=null; this.src=''; this.style.background='linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)'; this.style.minHeight='200px';">
+                                        </div>
+                                    </a>
+                                    <div class="product-info" style="text-align: left;">
+                                        <span class="product-category"><%= product.category %></span>
+                                        <h3 class="product-name">
+                                            <a href="/products/<%= product.id %>"><%= product.name %></a>
+                                        </h3>
+                                        <div class="product-price">
+                                            <span class="price-current">$<%= product.price.toLocaleString() %></span>
+                                        </div>
+                                    </div>
+                                    <div class="product-actions">
+                                        <form action="/cart/add" method="POST">
+                                            <input type="hidden" name="productId" value="<%= product.id %>">
+                                            <button type="submit" class="btn btn-add-cart" style="width: 100%;">Add to Cart</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>
