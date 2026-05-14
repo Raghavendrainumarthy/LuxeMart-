@@ -41,18 +41,15 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(cookieParser());
 
 // VULNERABLE: Session configuration with weak settings
-app.use((req, res, next) => {
-    if (req.path === '/search') return next();
-    session({
-        secret: 'luxemart-secret-key-123', // Weak secret
-        resave: false,
-        saveUninitialized: true,
-        cookie: {
-            secure: false, // Should be true in production
-            httpOnly: false // VULNERABLE: Allows JS access to cookies
-        }
-    })(req, res, next);
-});
+app.use(session({
+    secret: 'luxemart-secret-key-123', // Weak secret
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        secure: false, // Should be true in production
+        httpOnly: false // VULNERABLE: Allows JS access to cookies
+    }
+}));
 
 // Static files with caching headers - VULNERABLE to cache attacks
 app.use('/static', (req, res, next) => {

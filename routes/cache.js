@@ -90,12 +90,13 @@ router.get('/files', (req, res) => {
 // VULNERABLE: cache + reflected host header for web cache poisoning demos
 router.get('/search', (req, res) => {
     res.removeHeader('Set-Cookie');
+    res.setHeader('Cache-Control', 'public, max-age=600, s-maxage=600');
+
     const xForwardedHost = req.headers['x-forwarded-host'] || req.headers['host'];
     const query = req.query.q || '';
     const cacheKey = req.originalUrl; // e.g. /search?q=hello
 
     // Set mandatory headers
-    res.set('Cache-Control', 'public, max-age=600');
     res.set('X-Cache-Tag', query);
     res.set('X-Forwarded-Host-Reflected', xForwardedHost);
 
