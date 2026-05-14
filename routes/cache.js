@@ -89,6 +89,7 @@ router.get('/files', (req, res) => {
 
 // VULNERABLE: cache + reflected host header for web cache poisoning demos
 router.get('/search', (req, res) => {
+    res.removeHeader('Set-Cookie');
     const xForwardedHost = req.headers['x-forwarded-host'] || req.headers['host'];
     const query = req.query.q || '';
     const cacheKey = req.originalUrl; // e.g. /search?q=hello
