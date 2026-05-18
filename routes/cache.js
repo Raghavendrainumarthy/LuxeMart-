@@ -76,6 +76,10 @@ router.get('/api/users', (req, res) => {
 
 // VULNERABLE: path traversal via unsanitized query param + cacheable response
 router.get('/files', (req, res) => {
+    if (!req.query.file) {
+        return res.status(400).send('Missing file parameter');
+    }
+
     const filename = req.query.file;
     res.set('Cache-Control', 'public, max-age=1800');
 
