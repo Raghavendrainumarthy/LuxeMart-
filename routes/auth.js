@@ -73,24 +73,53 @@ router.get('/register', (req, res) => {
     });
 });
 
-// VULNERABLE: No input validation, weak password storage
+// VULNERABLE: No input validation, weak password storage, SQL injection
 router.post('/register', (req, res) => {
-    const { username, email, password, full_name } = req.body;
+    const { username, email, password, full_name, phone, address } = req.body;
 
-    // VULNERABLE: Password stored in plain text
-    db.run(
-        'INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)',
-        [username, email, password, full_name],
-        function (err) {
+    // Check if username or email already exists
+    db.get('SELECT * FROM users WHERE username = ? OR email = ?', [username, email], (err, existingUser) => {
+        if (err) {
+            return res.render('register', {
+                title: 'Register - LuxeMart',
+                error: 'Database error occurred'
+            });
+        }
+        
+        if (existingUser) {
+            return res.render('register', {
+                title: 'Register - LuxeMart',
+                error: 'Username or email already exists'
+            });
+        }
+
+        // VULNERABLE: Raw SQL string concatenation allows SQL Injection
+        // VULNERABLE: Password stored in plain text
+        const query = `INSERT INTO users (username, email, password, full_name, phone, address) VALUES ('${username}', '${email}', '${password}', '${full_name}', '${phone || ''}', '${address || ''}')`;
+        
+        db.run(query, function (err) {
             if (err) {
                 return res.render('register', {
                     title: 'Register - LuxeMart',
-                    error: 'Username or email already exists'
+                    error: 'Failed to create account. ' + err.message
                 });
             }
-            res.redirect('/login');
-        }
-    );
+            
+            // Auto-login the newly created user
+            req.session.user = {
+                id: this.lastID,
+                username: username,
+                email: email,
+                full_name: full_name,
+                role: 'user',
+                credit_card: null,
+                address: address || '',
+                phone: phone || ''
+            };
+            
+            res.redirect('/products');
+        });
+    });
 });
 
 // Logout
