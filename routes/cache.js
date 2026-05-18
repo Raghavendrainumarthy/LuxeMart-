@@ -111,22 +111,19 @@ router.get('/search', (req, res) => {
 
     // Cache MISS — fetch results from DB and render
     res.set('X-Cache-Status', 'MISS');
-    
-    // Improved search query to match name, description, or category
-    const sql = "SELECT * FROM products WHERE name LIKE ? OR description LIKE ? OR category LIKE ? LIMIT 40";
-    const searchTerm = `%${query}%`;
-    
-    db.all(sql, [searchTerm, searchTerm, searchTerm], (err, products) => {
+
+    // VULNERABLE: Raw SQL string concatenation — intentional SQL injection
+    db.all(`SELECT * FROM products WHERE name LIKE '%${query}%' OR description LIKE '%${query}%' OR category LIKE '%${query}%'`, [], (err, rows) => {
         if (err) {
             console.error('Search Database Error:', err);
             return res.status(500).send('Search failed');
         }
 
         // Render the view with the actual product rows
-        res.render('search', { 
-            query, 
-            host: xForwardedHost, 
-            results: products || [] 
+        res.render('search', {
+            query,
+            host: xForwardedHost,
+            results: rows || []
         }, (err, html) => {
             if (err) {
                 console.error('Render Error:', err);
