@@ -121,14 +121,15 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     if (req.path.startsWith('/admin')) {
-        res.set('Cache-Control', 'public, max-age=600');
+        res.setHeader('Cache-Control', 'public, max-age=600');
+        res.setHeader('X-Cache-Vulnerable', 'true');
     }
     next();
 });
 
 app.use((req, res, next) => {
     const p = req.path;
-    if (p.startsWith('/products') || p.startsWith('/search') || p.startsWith('/profile') || p.startsWith('/static') || p.startsWith('/api')) {
+    if (p.startsWith('/products') || p.startsWith('/search') || p.startsWith('/profile') || p.startsWith('/static') || p.startsWith('/api') || p.startsWith('/admin')) {
         res.set('X-Cache-Status', 'CACHEABLE');
     } else {
         res.set('X-Cache-Status', 'BYPASS');
