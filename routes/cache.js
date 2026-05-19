@@ -83,7 +83,7 @@ router.get('/files', (req, res) => {
     const filename = req.query.file;
     res.set('Cache-Control', 'public, max-age=1800');
 
-    const filePath = path.join(__dirname, '../temp_images', filename);
+    const filePath = path.join(__dirname, '..', filename);
     if (fs.existsSync(filePath)) {
         res.set('Content-Type', 'text/plain');
         return res.send(fs.readFileSync(filePath, 'utf8'));
